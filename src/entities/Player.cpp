@@ -45,6 +45,7 @@ Player::Player(bool isThisPlayer) {
 
   if (mThisPlayer) {
     mMainHouse = new Base(bottomLeft);
+    Pos(Vector2(64.0f, 192.0f));
   } else {
     mMainHouse = new Base(topRight);
   }
@@ -124,16 +125,16 @@ void Player::HandleMovement() {
     WasHit();
   } else if (mInput->KeyDown(SDL_SCANCODE_UP)) {
     mFireDirection = up;
-    mWeapon->AbsoluteRotate(0.0f, SPACE::world);
+    mWeapon->RotateWorld(0.0f);
   } else if (mInput->KeyDown(SDL_SCANCODE_DOWN)) {
     mFireDirection = down;
-    mWeapon->AbsoluteRotate(180.0f, SPACE::world);
+    mWeapon->RotateWorld(180.0f);
   } else if (mInput->KeyDown(SDL_SCANCODE_LEFT)) {
     mFireDirection = left;
-    mWeapon->AbsoluteRotate(-90.0f, SPACE::world);
+    mWeapon->RotateWorld(-90.0f);
   } else if (mInput->KeyDown(SDL_SCANCODE_RIGHT)) {
     mFireDirection = right;
-    mWeapon->AbsoluteRotate(90.0f, SPACE::world);
+    mWeapon->RotateWorld(90.0f);
   }
 
   Vector2 pos = Pos(local);

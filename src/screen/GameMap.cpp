@@ -13,10 +13,37 @@ void GameMap::Release() {
   sInstance = NULL;
 }
 
-GameMap::GameMap() {}
+GameMap::GameMap() {
+  mGraphics = Graphics::Instance();
 
-GameMap::~GameMap() {}
+  for (int i = 0; i < mBricksPos.size(); i++) {
+    Brick* brick = new Brick();
+    brick->Parent(this);
+    brick->Pos(Vector2(mBricksPos[i].second * mGraphics->MAP_CELL_SIZE +
+                           mGraphics->MAP_CELL_SIZE / 2,
+                       mBricksPos[i].first * mGraphics->MAP_CELL_SIZE +
+                           mGraphics->MAP_CELL_SIZE / 2));
+    mBricks.push_back(brick);
+  }
+}
 
-void GameMap::Update() {}
+GameMap::~GameMap() {
+  mGraphics = NULL;
 
-void GameMap::Render() {}
+  for (int i = 0; i < mBricks.size(); i++) {
+    delete mBricks[i];
+    mBricks[i] = NULL;
+  }
+}
+
+void GameMap::Update() {
+  for (int i = 0; i < mBricks.size(); i++) {
+    mBricks[i]->Update();
+  }
+}
+
+void GameMap::Render() {
+  for (int i = 0; i < mBricks.size(); i++) {
+    mBricks[i]->Render();
+  }
+}

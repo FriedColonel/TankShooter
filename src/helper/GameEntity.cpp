@@ -150,6 +150,15 @@ void GameEntity::AbsoluteRotate(float amount, SPACE space) {
   }
 }
 
+void GameEntity::RotateWorld(float amount) {
+  // rotate the object without care for the parent's rotation
+  mRotation = amount;
+
+  // if the object has a parent, subtract the parent's rotation to keep the
+  // object's world rotation the same
+  if (mParent != NULL) mRotation -= mParent->Rotation(world);
+}
+
 void GameEntity::Update() {}
 
 void GameEntity::Render() {}

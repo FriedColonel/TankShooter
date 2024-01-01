@@ -29,7 +29,7 @@ class Graphics {
   // The Width of the game's window
   const int SCREEN_WIDTH = 1920;
   // The Height of the game's window
-  const int SCREEN_HEIGHT = 960;
+  const int SCREEN_HEIGHT = 1024;
   // The title of the game's window
   const char* WINDOW_TITLE = "QuickSDL";
   // Cell size used for image

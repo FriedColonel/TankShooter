@@ -3,6 +3,7 @@
 
 #include <QuickSDL/GameEntity.h>
 #include <QuickSDL/Timer.h>
+#include <headers/GameMap.h>
 #include <headers/Player.h>
 
 using namespace QuickSDL;
@@ -13,6 +14,8 @@ class PlayScreen : public GameEntity {
 
   Player* mPlayer;
   Player* mEnemy;
+
+  GameMap* mGameMap;
 
  public:
   void Update();

@@ -148,6 +148,7 @@ class GameEntity {
   // Rotates the GameEntity's locally by the given amount
   //------------------------------------------------------
   void AbsoluteRotate(float amount, SPACE space = local);
+  void RotateWorld(float amount);
 
   virtual void Update();
   virtual void Render();
