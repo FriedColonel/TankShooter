@@ -1,11 +1,35 @@
 #include <headers/Base.h>
+#include <headers/BoxCollider.h>
+#include <headers/Bullet.h>
 
-Base::Base(BASE_POSITION basePos) {
+Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
   mTimer = Timer::Instance();
   mGraphics = Graphics::Instance();
+  mPhysicMgr = PhysicManager::Instance();
+
+  mAnimating = false;
+  mIsThisPlayer = isThisPlayer;
+
+  mRespawnTimer = 0.0f;
+  mRespawnDelay = 1.0f;
+
+  mColor = color;
+
+  mId =
+      mPhysicMgr->RegisterEntity(this, PhysicManager::CollisionLayers::Hostile);
+
+  mTank = new Tank(isThisPlayer, basePos, color);
 
   mTexture = new Texture("Base/eagle.png", 0, 0, 60, 60);
   mTexture->Parent(this);
+  AddCollider(new BoxCollider(mTexture->ScaledDimensions()));
+
+  mDeathAnimation =
+      new AnimatedTexture("Explosion/explosion.png", 0, 0, 256, 256, 8, 0.68f,
+                          AnimatedTexture::horizontal);
+  mDeathAnimation->Parent(this);
+  mDeathAnimation->Scale(Vector2(0.25f, 0.25f));
+  mDeathAnimation->WrapMode(AnimatedTexture::once);
 
   mBasePosition = basePos;
 
@@ -63,26 +87,83 @@ Base::Base(BASE_POSITION basePos) {
 Base::~Base() {
   mTimer = NULL;
   mGraphics = NULL;
+  mPhysicMgr = NULL;
 
   delete mTexture;
   mTexture = NULL;
+
+  delete mTank;
+  mTank = NULL;
 
   for (int i = 0; i < 3; i++) {
     delete mWalls[i];
     mWalls[i] = NULL;
   }
+
+  delete mDeathAnimation;
+  mDeathAnimation = NULL;
+
+  mId = 0;
+}
+
+void Base::HandlePlayerDeath() {
+  if (mTank->WasHit()) {
+    if (mRespawnTimer == 0.0f) {
+      mTank->Dead();
+    }
+
+    mRespawnTimer += mTimer->DeltaTime();
+
+    if (mRespawnTimer >= mRespawnDelay) {
+      mRespawnTimer = 0.0f;
+
+      delete mTank;
+      mTank = new Tank(mIsThisPlayer, mBasePosition, mColor);
+    }
+  }
+}
+
+bool Base::WasHit() { return mAnimating; }
+
+void Base::Hit(PhysicEntity* other) {
+  if (instanceof <Bullet>(other)) {
+    mAnimating = true;
+    Active(false);
+    mTank->Dead();
+
+    for (int i = 0; i < 3; i++) {
+      mWalls[i]->Dead();
+    }
+  }
 }
 
 void Base::Update() {
+  if (mAnimating) {
+    mDeathAnimation->Update();
+    mAnimating = !mDeathAnimation->IsAnimationDone();
+  } else {
+    HandlePlayerDeath();
+  }
+
+  mTank->Update();
+
   for (int i = 0; i < 3; i++) {
     mWalls[i]->Update();
   }
 }
 
 void Base::Render() {
-  mTexture->Render();
-
-  for (int i = 0; i < 3; i++) {
-    mWalls[i]->Render();
+  if (mAnimating) {
+    mDeathAnimation->Render();
+    mTank->Render();
+  } else {
+    if (Active()) {
+      mTank->Render();
+      mTexture->Render();
+      for (int i = 0; i < 3; i++) {
+        mWalls[i]->Render();
+      }
+      PhysicEntity::Render();
+    }
   }
 }

@@ -20,6 +20,8 @@ class Brick : public PhysicEntity {
   Brick();
   ~Brick();
 
+  void Dead();
+
   void Hit(PhysicEntity* other) override;
 
   void Update();

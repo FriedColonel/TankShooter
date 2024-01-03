@@ -26,7 +26,20 @@ Brick::Brick() {
   AddCollider(new BoxCollider(mTexture->ScaledDimensions()));
 }
 
-Brick::~Brick() { mId = 0; }
+Brick::~Brick() {
+  mId = 0;
+  delete mTexture;
+  mTexture = NULL;
+
+  delete mDeathAnimation;
+  mDeathAnimation = NULL;
+}
+
+void Brick::Dead() {
+  mAnimating = true;
+  Active(false);
+  mDeathAnimation->ResetAnimation();
+}
 
 void Brick::Hit(PhysicEntity* other) {
   // check if other is bullet or not
@@ -34,10 +47,7 @@ void Brick::Hit(PhysicEntity* other) {
     mHealth--;
     mTexture->IgnoreTimerUpdate();
 
-    if (mHealth <= 0) {
-      mAnimating = true;
-      Active(false);
-    }
+    if (mHealth <= 0) Dead();
   }
 }
 

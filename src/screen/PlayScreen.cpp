@@ -22,19 +22,22 @@ void PlayScreen::StartNewGame() {
   delete mPlayer;
   mPlayer = NULL;
 
-  mPlayer = new Player();
+  mPlayer = new Player(true, BASE_POSITION::topLeft, COLOR::red);
+  mPlayer->Parent(this);
+
+  mEnemy = new Player(false, BASE_POSITION::topRight, COLOR::blue);
   mPlayer->Parent(this);
 }
 
 void PlayScreen::Update() {
   mGameMap->Update();
   if (mPlayer != NULL) mPlayer->Update();
-  // if (mEnemy != NULL) mEnemy->Update();
+  if (mEnemy != NULL) mEnemy->Update();
 }
 
 void PlayScreen::Render() {
   mGameMap->Render();
   mPlayer->Render();
 
-  // mEnemy->Render();
+  mEnemy->Render();
 }

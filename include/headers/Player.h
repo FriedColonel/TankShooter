@@ -8,52 +8,25 @@
 #include <headers/Base.h>
 #include <headers/Bullet.h>
 #include <headers/PhysicEntity.h>
+#include <headers/Tank.h>
 
 using namespace QuickSDL;
 
-class Player : public PhysicEntity {
+class Player : public GameEntity {
  private:
-  static const int MOVE_SPEED = 100;
   Timer* mTimer;
   InputManager* mInput;
 
   bool mAlive;
-  bool mAnimating;
-  bool mWasHit;
   bool mThisPlayer;
 
-  AnimatedTexture* mBase;
-  AnimatedTexture* mWeapon;
-  AnimatedTexture* mDeathAnimation;
-
-  float mMoveSpeed;
-  Vector2 mMoveBoundsX;
-  Vector2 mMoveBoundsY;
-
-  DIRECTION mDirection;
-  DIRECTION mFireDirection;
-
-  static const int MAX_BULLETS = 5;
-  Bullet* mBullets[MAX_BULLETS];
-
-  Base* mMainHouse;
-
- private:
-  void HandleMovement();
-  void HandleFiring();
+  Base* mBase;
 
  public:
-  Player(bool isThisPlayer = true);
+  Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color);
   ~Player();
 
   void Alive(bool alive);
-
-  void Hit(PhysicEntity* other) override;
-  bool WasHit();
-
-  bool IsAnimating();
-
-  void Shoot();
 
   void Update();
   void Render();

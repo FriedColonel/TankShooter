@@ -11,6 +11,8 @@
 #ifndef _GAMEENTITY_H
 #define _GAMEENTITY_H
 //--------------------------------------------------------------------
+#include <map>
+
 #include "MathHelper.h"
 //--------------------------------------------------------------------
 // QuickSDL
@@ -33,12 +35,14 @@ class GameEntity {
     topRight = 2,
     topLeft = 3
   };
+  enum COLOR { red = 0, purple = 1, camo = 2, blue = 3 };
+  std::map<COLOR, std::string> colorMap = {
+      {red, "Red"}, {purple, "Purple"}, {camo, "Camo"}, {blue, "Blue"}};
 
  private:
   //--------------------------------------------------------------------------------------------------------------
-  // Position/Rotation/Scale/Active/Parent set to private to make they are not
-  // set directly, but the functions are
-  // used instead
+  // Position/Rotation/Scale/Active/Parent set to private to make they are
+  // not set directly, but the functions are used instead
   //--------------------------------------------------------------------------------------------------------------
   Vector2 mPos;
   float mRotation;

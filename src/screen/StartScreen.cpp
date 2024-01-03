@@ -27,9 +27,9 @@ StartScreen::StartScreen() {
                              Graphics::Instance()->SCREEN_HEIGHT * 0.55f));
 
   mNewGameMode =
-      new Texture("NEW GAME", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("NEW ROOM", "Font/ARCADE.TTF", 32, {230, 230, 230});
   mConnectGameMode =
-      new Texture("CONNECT TO GAME", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("JOIN ROOM", "Font/ARCADE.TTF", 32, {230, 230, 230});
   mCursor = new Texture("Cursor/cursor.png");
 
   mNewGameMode->Parent(mPlayMode);
