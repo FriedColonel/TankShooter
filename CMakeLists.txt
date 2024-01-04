@@ -33,6 +33,8 @@ add_executable(${PROJECT_NAME}
 
 add_executable(Server src/server.cpp ${SocketSRC} ${NetworkingSRC})
 
+add_executable(Client src/client.cpp ${SocketSRC} ${NetworkingSRC})
+
 target_link_libraries(TankShooter
   ${SDL2_LIBRARIES}
   ${SDL2_IMAGE_LIBRARIES}

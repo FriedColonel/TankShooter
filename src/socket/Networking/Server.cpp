@@ -24,10 +24,10 @@ int TSS::Server::accepter() {
   return client_socket;
 }
 
-void TSS::Server::broadcast(char *msg, size_t msg_length) {
+void TSS::Server::broadcast(std::string msg) {
   for (int i = 0; i <= max_fd; i++) {
     if (i != get_sock()) {
-      responder(i, msg, msg_length);
+      responder(i, msg);
     }
   }
 }
@@ -60,8 +60,8 @@ int TSS::Server::handler(int client_socket) {
   return 1;
 }
 
-void TSS::Server::responder(int client_socket, char *msg, size_t msg_length) {
-  size_t bytes_sent = send(client_socket, msg, msg_length, 0);
+void TSS::Server::responder(int client_socket, std::string msg) {
+  size_t bytes_sent = send(client_socket, msg.c_str(), msg.size(), 0);
 
   if (bytes_sent < 0) {
     perror("Error when sending message");
@@ -119,7 +119,7 @@ void TSS::Server::handle_auth(int client_socket) {
       strcpy(response_msg, "auth:login:user_not_found");
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    responder(client_socket, response_msg);
   }
 }
 
@@ -130,38 +130,39 @@ void TSS::Server::handle_game(int client_socket) {
     char *username = strtok(NULL, ":");
     char *map = strtok(NULL, ":");
 
-    char room_id[256] = {0};
-    strcpy(room_id, game_handler->create_room(username, atoi(map)));
+    std::string room = game_handler->create_room(username, atoi(map));
 
-    responder(client_socket, room_id, sizeof(room_id));
+    std::cout << "Room id: " << room << std::endl;
+
+    responder(client_socket, room);
   }
 
   if (strcmp(action, "join_room") == 0) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
-    if (game_handler->join_room(username, room_id)) {
-      strcpy(response_msg, "game:join_room:success");
+    std::string joined_room = game_handler->join_room(username, room_id);
+
+    if (joined_room == "") {
+      joined_room = "game:join_room:failed";
     } else {
-      strcpy(response_msg, "game:join_room:failed");
+      joined_room = "game:join_room:success\n" + joined_room;
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    broadcast(joined_room);
   }
 
   if (strcmp(action, "find_room") == 0) {
     char *room_id = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
-    Room *room = game_handler->find_room(room_id);
-    if (room != NULL) {
-      strcpy(response_msg, "game:find_room:success");
+    std::string founded_room = game_handler->find_room(room_id);
+    if (founded_room == "") {
+      founded_room = "game:find_room:failed";
     } else {
-      strcpy(response_msg, "game:find_room:failed");
+      founded_room = "game:find_room:success:" + founded_room;
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    responder(client_socket, founded_room);
   }
 
   if (strcmp(action, "leave_room") == 0) {
@@ -175,7 +176,7 @@ void TSS::Server::handle_game(int client_socket) {
       strcpy(response_msg, "game:leave_room:failed");
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    responder(client_socket, response_msg);
   }
 
   if (strcmp(action, "ready") == 0) {
@@ -189,7 +190,7 @@ void TSS::Server::handle_game(int client_socket) {
       strcpy(response_msg, "game:ready:failed");
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    responder(client_socket, response_msg);
   }
 
   if (strcmp(action, "unready") == 0) {
@@ -203,6 +204,6 @@ void TSS::Server::handle_game(int client_socket) {
       strcpy(response_msg, "game:unready:failed");
     }
 
-    responder(client_socket, response_msg, sizeof(response_msg));
+    responder(client_socket, response_msg);
   }
 }

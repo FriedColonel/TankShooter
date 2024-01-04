@@ -29,9 +29,9 @@ class Server : public SocketServer {
          int backlog);
   // Start server
   void launch();
-  void responder(int clent_socket, char *msg, size_t msg_length);
+  void responder(int clent_socket, std::string msg);
   // Broadcast message to all clients
-  void broadcast(char *msg, size_t msg_length);
+  void broadcast(std::string msg);
   // Handle client events
   void handle_auth(int client_socket);
   // Handle game events

@@ -5,7 +5,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <nlohmann/json.hpp>
+
 #include "tss-socket.hpp"
+
+using json = nlohmann::json;
+using std::to_string;
 
 namespace TSS {
 class Client : public SocketClient {
@@ -19,7 +24,7 @@ class Client : public SocketClient {
 
   std::string username;
 
-  std::string currentRoom;
+  Room currentRoom;
 
  private:
   bool login(char *username, char *password);
@@ -33,7 +38,7 @@ class Client : public SocketClient {
   ~Client();
 
   void sender(char *msg, size_t msg_length);
-  char *receiver();
+  std::string receiver();
 
   // Event handler
   void create_room(char *username, int map);
@@ -42,6 +47,12 @@ class Client : public SocketClient {
   void close_socket();
 
   void login();
+
+  // Getter function
+  Room get_current_room();
+
+  // Setter function
+  void set_current_room(Room room);
 };
 }  // namespace TSS
 

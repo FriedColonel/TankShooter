@@ -2,7 +2,7 @@
 
 TSS::GameHandler::GameHandler() { rooms = new LinkedList(); }
 
-char *TSS::GameHandler::create_room(char *username, int map) {
+std::string TSS::GameHandler::create_room(std::string username, int map) {
   // create new player
   Player *player = new Player();
   player->username = username;
@@ -19,13 +19,13 @@ char *TSS::GameHandler::create_room(char *username, int map) {
 
   rooms->insert(0, room, sizeof(struct Room));
 
-  return room->room_id;
+  return json_to_string(*room_to_json(room));
 }
 
-bool TSS::GameHandler::join_room(char *username, char *room_id) {
+std::string TSS::GameHandler::join_room(std::string username, char *room_id) {
   Room *room = static_cast<Room *>(rooms->search(room_id, compare));
   if (room == NULL) {
-    return false;
+    return "";
   }
 
   Player *player = new Player();
@@ -36,7 +36,7 @@ bool TSS::GameHandler::join_room(char *username, char *room_id) {
 
   room->players.push_back(*player);
 
-  return true;
+  return json_to_string(*room_to_json(room));
 }
 
 char *TSS::GameHandler::generate_random_string(size_t length) {
@@ -56,19 +56,19 @@ char *TSS::GameHandler::generate_random_string(size_t length) {
   return buffer;
 }
 
-TSS::Room *TSS::GameHandler::find_room(char *room_id) {
+std::string TSS::GameHandler::find_room(char *room_id) {
   Room *room = static_cast<Room *>(rooms->search(room_id, compare));
-  return room;
+  return json_to_string(*room_to_json(room));
 }
 
-bool TSS::GameHandler::leave_room(char *username, char *room_id) {
+bool TSS::GameHandler::leave_room(std::string username, char *room_id) {
   Room *room = static_cast<Room *>(rooms->search(room_id, compare));
   if (room == NULL) {
     return false;
   }
 
   for (int i = 0; i < room->players.size(); i++) {
-    if (strcmp(room->players[i].username, username) == 0) {
+    if (room->players[i].username == username) {
       room->players.erase(room->players.begin() + i);
       return true;
     }
@@ -77,14 +77,14 @@ bool TSS::GameHandler::leave_room(char *username, char *room_id) {
   return false;
 }
 
-bool TSS::GameHandler::ready(char *username, char *room_id) {
+bool TSS::GameHandler::ready(std::string username, char *room_id) {
   Room *room = static_cast<Room *>(rooms->search(room_id, compare));
   if (room == NULL) {
     return false;
   }
 
   for (int i = 0; i < room->players.size(); i++) {
-    if (strcmp(room->players[i].username, username) == 0) {
+    if (room->players[i].username == username) {
       room->players[i].status = 1;
       return true;
     }
@@ -93,14 +93,14 @@ bool TSS::GameHandler::ready(char *username, char *room_id) {
   return false;
 }
 
-bool TSS::GameHandler::unready(char *username, char *room_id) {
+bool TSS::GameHandler::unready(std::string username, char *room_id) {
   Room *room = static_cast<Room *>(rooms->search(room_id, compare));
   if (room == NULL) {
     return false;
   }
 
   for (int i = 0; i < room->players.size(); i++) {
-    if (strcmp(room->players[i].username, username) == 0) {
+    if (room->players[i].username == username) {
       room->players[i].status = 0;
       return true;
     }
@@ -113,11 +113,11 @@ int TSS::GameHandler::compare(void *a, void *b) {
   struct Room *room = (struct Room *)a;
   char *room_id = (char *)b;
 
-  if (strcmp(room->room_id, room_id) == 0) {
+  if (strcmp(room->room_id.c_str(), room_id) == 0) {
     return 0;
   }
 
-  if (strcmp(room->room_id, room_id) > 0) {
+  if (strcmp(room->room_id.c_str(), room_id) > 0) {
     return 1;
   }
 

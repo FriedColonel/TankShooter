@@ -2,6 +2,7 @@
 #define tss_handler_hpp
 
 #include "AuthHandler.hpp"
+#include "Data.hpp"
 #include "GameHandler.hpp"
 
 #endif

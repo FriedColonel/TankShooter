@@ -16,9 +16,7 @@ void TSS::Client::Release() {
 
 TSS::Client::Client(int domain, int service, int protocol, int port,
                     char *interface)
-    : SocketClient(domain, service, protocol, port, interface) {
-  currentRoom = "";
-}
+    : SocketClient(domain, service, protocol, port, interface) {}
 
 TSS::Client::~Client() {
   close(get_sock());
@@ -46,7 +44,7 @@ void TSS::Client::responder() {
   write(get_sock(), buffer, strlen(buffer));
 }
 
-char *TSS::Client::receiver() {
+std::string TSS::Client::receiver() {
   size_t bytes_received = recv(get_sock(), buffer, sizeof(buffer), 0);
 
   if (bytes_received <= 0) {
@@ -73,7 +71,7 @@ bool TSS::Client::login(char *username, char *password) {
 
   sender(send_message, sizeof(send_message));
 
-  if (strcmp("auth:login:success", receiver()) == 0) {
+  if (receiver() == "auth:login:success") {
     return true;
   }
 
@@ -92,9 +90,7 @@ void TSS::Client::create_room(char *username, int map) {
 
   sender(send_message, sizeof(send_message));
 
-  char *response = receiver();
-
-  std::cout << "Msg from server: " << receiver() << std::endl;
+  // std::cout << "Msg from server: " << receiver() << std::endl;
 }
 
 void TSS::Client::join_room(char *username, char *room_id) {
@@ -126,3 +122,9 @@ void TSS::Client::login() {
 
   std::cout << "Login success" << std::endl;
 }
+
+// Getter function
+TSS::Room TSS::Client::get_current_room() { return currentRoom; }
+
+// Setter function
+void TSS::Client::set_current_room(Room room) { currentRoom = room; }
