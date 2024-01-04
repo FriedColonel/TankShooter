@@ -3,6 +3,8 @@
 LobbyScreen::LobbyScreen() {
   Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f, 0.0f));
 
+  mClient = TSS::Client::Instance();
+
   mTitle = new Texture("LOBBY", "Font/ARCADE.TTF", 80, {150, 0, 0});
   mTitle->Parent(this);
   mTitle->Pos(Vector2(0.0f, 70.0f));
@@ -14,10 +16,7 @@ LobbyScreen::LobbyScreen() {
 
   mRoomCode = NULL;
 
-  for (int i = 0; i < 4; i++) {
-    mPlayerInfo[i] =
-        new PlayerInfo("Huy123", GameEntity::COLOR::blue, false, i);
-  }
+  TSS::Room* room = mClient->get_current_room();
 }
 
 LobbyScreen::~LobbyScreen() {
@@ -33,7 +32,22 @@ LobbyScreen::~LobbyScreen() {
   }
 }
 
-void LobbyScreen::Update() {}
+void LobbyScreen::Update() {
+  if (mClient->get_current_room()) {
+    SetRoomCode(mClient->get_current_room()->room_id);
+
+    for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
+      printf("Test test\n");
+
+      mPlayerInfo[i] = new PlayerInfo(
+          mClient->get_current_room()->players[i].username,
+          static_cast<COLOR>(mClient->get_current_room()->players[i].tank),
+          mClient->get_current_room()->players[i].username ==
+              mClient->get_username(),
+          i);
+    }
+  }
+}
 
 void LobbyScreen::Render() {
   mTitle->Render();

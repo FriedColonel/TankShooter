@@ -1,14 +1,17 @@
 #include <QuickSDL/GameManager.h>
+#include <headers/ScreenManager.h>
 
+#include <mutex>
 #include <socket/Client.hpp>
 #include <socket/ThreadPool.hpp>
 #include <sstream>
+#include <thread>
 
 using namespace TSS;
 using namespace std;
 
-void *auto_recv_message(void *arg) {
-  Client *client = static_cast<Client *>(arg);
+void *auto_recv_message() {
+  Client *client = Client::Instance();
 
   char buffer[1024];
 
@@ -66,10 +69,8 @@ int main(int argc, char const *argv[]) {
   TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
   client->login();
 
-  ThreadJob thread_job(&auto_recv_message, (void *)client);
-
-  ThreadPool *thread_pool = new ThreadPool(1);
-  thread_pool->add_work(thread_job);
+  thread recv_thread(auto_recv_message);
+  recv_thread.detach();
 
   QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();
   game->Run();

@@ -2,6 +2,8 @@
 
 TSS::Client *TSS::Client::sInstance = NULL;
 
+TSS::Client *TSS::Client::Instance() { return sInstance; }
+
 TSS::Client *TSS::Client::Instance(int port, char *interface) {
   if (sInstance == NULL)
     sInstance = new Client(AF_INET, SOCK_STREAM, 0, port, interface);
@@ -16,7 +18,9 @@ void TSS::Client::Release() {
 
 TSS::Client::Client(int domain, int service, int protocol, int port,
                     char *interface)
-    : SocketClient(domain, service, protocol, port, interface) {}
+    : SocketClient(domain, service, protocol, port, interface) {
+  currentRoom = NULL;
+}
 
 TSS::Client::~Client() {
   close(get_sock());

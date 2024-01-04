@@ -11,9 +11,10 @@
 #include <socket/Client.hpp>
 
 class ScreenManager {
- private:
+ public:
   enum SCREENS { mapChoose, join, lobby, start, play };
 
+ private:
   static ScreenManager* sInstance;
   TSS::Client* mClient;
 
@@ -34,6 +35,8 @@ class ScreenManager {
 
   void Update();
   void Render();
+
+  void SetCurrentScreen(SCREENS screen);
 
  private:
   ScreenManager();

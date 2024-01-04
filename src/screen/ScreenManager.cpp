@@ -17,7 +17,7 @@ void ScreenManager::Release() {
 
 ScreenManager::ScreenManager() {
   mInput = InputManager::Instance();
-  mClient = TSS::Client::Instance(123, "abc");
+  mClient = TSS::Client::Instance();
 
   mStartScreen = new StartScreen();
   mCurrentScreen = start;
@@ -60,7 +60,6 @@ void ScreenManager::Update() {
         mCurrentScreen = lobby;
         mGameMap->SetMapChoice(mMapChooseScreen->GetSelectedMap());
         mClient->create_room(mMapChooseScreen->GetSelectedMap());
-        // mLobbyScreen->SetRoomCode(mClient->get_current_room());
       }
       break;
 
@@ -121,4 +120,8 @@ void ScreenManager::Render() {
     default:
       break;
   }
+}
+
+void ScreenManager::SetCurrentScreen(SCREENS screen) {
+  mCurrentScreen = screen;
 }

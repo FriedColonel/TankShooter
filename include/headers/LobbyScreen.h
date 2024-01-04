@@ -6,6 +6,7 @@
 #include <QuickSDL/Texture.h>
 #include <headers/Tank.h>
 
+#include <socket/Client.hpp>
 #include <string>
 
 using namespace QuickSDL;
@@ -75,6 +76,8 @@ class LobbyScreen : public GameEntity {
   Texture* mTitle;
   Texture* mInstruction;
   Texture* mRoomCode;
+
+  TSS::Client* mClient;
 
   struct PlayerInfo* mPlayerInfo[4];
 
