@@ -3,20 +3,27 @@
 
 #include <QuickSDL/InputManager.h>
 #include <headers/JoinScreen.h>
+#include <headers/LobbyScreen.h>
+#include <headers/MapChooseScreen.h>
 #include <headers/PlayScreen.h>
 #include <headers/StartScreen.h>
 
+#include <socket/Client.hpp>
+
 class ScreenManager {
  private:
-  enum SCREENS { start, join, lobby, play };
+  enum SCREENS { mapChoose, join, lobby, start, play };
 
   static ScreenManager* sInstance;
+  TSS::Client* mClient;
 
   InputManager* mInput;
 
   StartScreen* mStartScreen;
+  LobbyScreen* mLobbyScreen;
   JoinScreen* mJoinScreen;
   PlayScreen* mPlayScreen;
+  MapChooseScreen* mMapChooseScreen;
 
   SCREENS mCurrentScreen;
 

@@ -3,6 +3,8 @@ project(TankShooter VERSION 0.1 LANGUAGES CXX)
 cmake_policy(SET CMP0072 NEW)
 
 file(GLOB TankShooterSRC "src/*/*.cpp")
+file(GLOB SocketSRC "src/socket/*/*.cpp")
+file(GLOB NetworkingSRC "src/socket/Networking/*/*.cpp")
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -25,9 +27,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(${PROJECT_NAME}
   src/main.cpp
   ${TankShooterSRC}
+  ${SocketSRC}
+  ${NetworkingSRC}
 )
 
-add_executable(Server src/server.cpp)
+add_executable(Server src/server.cpp ${SocketSRC} ${NetworkingSRC})
 
 target_link_libraries(TankShooter
   ${SDL2_LIBRARIES}

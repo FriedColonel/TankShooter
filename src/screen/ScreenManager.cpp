@@ -17,12 +17,18 @@ void ScreenManager::Release() {
 
 ScreenManager::ScreenManager() {
   mInput = InputManager::Instance();
+  mClient = TSS::Client::Instance(123, "abc");
 
   mStartScreen = new StartScreen();
   mCurrentScreen = start;
 
   mJoinScreen = new JoinScreen();
   mPlayScreen = new PlayScreen();
+
+  mLobbyScreen = new LobbyScreen();
+  mLobbyScreen->SetRoomCode("12345");
+
+  mMapChooseScreen = new MapChooseScreen();
 }
 
 ScreenManager::~ScreenManager() {
@@ -40,11 +46,30 @@ void ScreenManager::Update() {
     case start:
       mStartScreen->Update();
       if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
-        if (mStartScreen->SelectedMode() == lobby) {
-          mCurrentScreen = lobby;
+        if (mStartScreen->SelectedMode() == mapChoose) {
+          mCurrentScreen = mapChoose;
         } else if (mStartScreen->SelectedMode() == join) {
           mCurrentScreen = join;
         }
+      }
+      break;
+
+    case mapChoose:
+      mMapChooseScreen->Update();
+      if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
+        mCurrentScreen = start;
+      } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
+        mCurrentScreen = lobby;
+      }
+      break;
+
+    case lobby:
+      mLobbyScreen->Update();
+      if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
+        mCurrentScreen = start;
+      } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
+        mCurrentScreen = play;
+        mPlayScreen->StartNewGame();
       }
       break;
 
@@ -74,6 +99,14 @@ void ScreenManager::Render() {
   switch (mCurrentScreen) {
     case start:
       mStartScreen->Render();
+      break;
+
+    case mapChoose:
+      mMapChooseScreen->Render();
+      break;
+
+    case lobby:
+      mLobbyScreen->Render();
       break;
 
     case join:

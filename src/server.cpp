@@ -1,41 +1,16 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <stdio.h>
 
 #include <iostream>
-#include <map>
-#include <nlohmann/json.hpp>
-#include <string>
-
-#define PORT 5550
-#define BACKLOG 2
-#define MAX_CLIENTS 10
-#define KEY_SIZE 20
-#define BUFF_SIZE 32765
-#define CODE_LENGTH 5
+#include <socket/Server.hpp>
 
 using namespace std;
-using namespace nlohmann;
+using namespace TSS;
 
-map<string, string> rooms;
+int main(int argc, char const *argv[]) {
+  Server *server =
+      new Server(AF_INET, SOCK_STREAM, 0, atoi(argv[1]), INADDR_ANY, 5);
 
-string seedRoomCode() {
-  string code;
-  for (int i = 0; i < CODE_LENGTH; i++) {
-    code += (rand() % 10) + '0';
-  }
+  server->launch();
 
-  return code;
-}
-
-int main(int argc, char const* argv[]) {
-  srand(time(NULL));
-  json j = json::parse("{\"happy\": true, \"pi\": 3.141}");
-  cout << j.dump() << endl;
   return 0;
 }
