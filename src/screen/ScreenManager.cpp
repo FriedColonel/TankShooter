@@ -24,11 +24,9 @@ ScreenManager::ScreenManager() {
 
   mJoinScreen = new JoinScreen();
   mPlayScreen = new PlayScreen();
-
   mLobbyScreen = new LobbyScreen();
-  mLobbyScreen->SetRoomCode("12345");
-
   mMapChooseScreen = new MapChooseScreen();
+  mGameMap = GameMap::Instance();
 }
 
 ScreenManager::~ScreenManager() {
@@ -60,6 +58,9 @@ void ScreenManager::Update() {
         mCurrentScreen = start;
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
         mCurrentScreen = lobby;
+        mGameMap->SetMapChoice(mMapChooseScreen->GetSelectedMap());
+        mClient->create_room(mMapChooseScreen->GetSelectedMap());
+        // mLobbyScreen->SetRoomCode(mClient->get_current_room());
       }
       break;
 

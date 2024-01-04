@@ -36,9 +36,9 @@ StartScreen::StartScreen() {
   mConnectGameMode->Parent(mPlayMode);
   mCursor->Parent(mPlayMode);
 
-  mNewGameMode->Pos(Vector2(-60.0f, -32.0f));
-  mConnectGameMode->Pos(Vector2(50.0f, 32.0f));
-  mCursor->Pos(Vector2(-210.0f, -32.0f));
+  mNewGameMode->Pos(Vector2(0.0f, -32.0f));
+  mConnectGameMode->Pos(Vector2(0.0f, 32.0f));
+  mCursor->Pos(Vector2(-200.0f, -32.0f));
 
   mPlayMode->Parent(this);
 

@@ -9,6 +9,23 @@
 
 using namespace QuickSDL;
 
+class RoomInfo : GameEntity {
+ private:
+  std::string mRoomCode;
+  int mCount;
+
+  GameEntity* mBox;
+  Texture* mCode;
+  Texture* mPlayerCount;
+
+ public:
+  RoomInfo(std::string code, int playerCount);
+  ~RoomInfo();
+
+  void Render();
+  void Update();
+};
+
 class JoinScreen : public GameEntity {
  private:
   InputManager* mInput;

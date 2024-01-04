@@ -61,17 +61,18 @@ std::string TSS::Client::receiver() {
 void TSS::Client::close_socket() { close(get_sock()); }
 
 // Event handler
-bool TSS::Client::login(char *username, char *password) {
+bool TSS::Client::login(char *userName, char *password) {
   char send_message[256];
 
   strcpy(send_message, "auth:login:");
-  strcat(send_message, username);
+  strcat(send_message, userName);
   strcat(send_message, ":");
   strcat(send_message, password);
 
   sender(send_message, sizeof(send_message));
 
   if (receiver() == "auth:login:success") {
+    this->username = std::string(userName);
     return true;
   }
 
@@ -80,17 +81,15 @@ bool TSS::Client::login(char *username, char *password) {
   return false;
 }
 
-void TSS::Client::create_room(char *username, int map) {
-  char send_message[256];
+void TSS::Client::create_room(int map) {
+  printf("Username: %s\n", username.c_str());
 
-  strcpy(send_message, "game:create_room:");
-  strcat(send_message, username);
-  strcat(send_message, ":");
-  strcat(send_message, std::to_string(map).c_str());
+  std::string send_message =
+      "game:create_room:" + username + ":" + std::to_string(map);
 
-  sender(send_message, sizeof(send_message));
+  // printf("%s\n", send_message.c_str());
 
-  // std::cout << "Msg from server: " << receiver() << std::endl;
+  sender((char *)send_message.c_str(), sizeof(send_message));
 }
 
 void TSS::Client::join_room(char *username, char *room_id) {
@@ -102,8 +101,6 @@ void TSS::Client::join_room(char *username, char *room_id) {
   strcat(send_message, room_id);
 
   sender(send_message, sizeof(send_message));
-
-  std::cout << "Msg from server: " << receiver() << std::endl;
 }
 
 void TSS::Client::login() {
@@ -118,13 +115,13 @@ void TSS::Client::login() {
     std::cout << "Password: ";
     std::cin.clear();
     std::cin.getline(password, 256);
-  } while (!sInstance->login(username, password));
+  } while (!login(username, password));
 
   std::cout << "Login success" << std::endl;
 }
 
 // Getter function
-TSS::Room TSS::Client::get_current_room() { return currentRoom; }
+TSS::Room *TSS::Client::get_current_room() { return currentRoom; }
 
 // Setter function
-void TSS::Client::set_current_room(Room room) { currentRoom = room; }
+void TSS::Client::set_current_room(Room *room) { currentRoom = room; }

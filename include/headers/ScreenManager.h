@@ -24,6 +24,7 @@ class ScreenManager {
   JoinScreen* mJoinScreen;
   PlayScreen* mPlayScreen;
   MapChooseScreen* mMapChooseScreen;
+  GameMap* mGameMap;
 
   SCREENS mCurrentScreen;
 

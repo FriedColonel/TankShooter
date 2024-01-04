@@ -107,7 +107,7 @@ Base::~Base() {
 }
 
 void Base::HandlePlayerDeath() {
-  if (mTank->WasHit()) {
+  if (mTank->WasHit() && Active()) {
     if (mRespawnTimer == 0.0f) {
       mTank->Dead();
     }

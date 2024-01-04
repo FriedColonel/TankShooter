@@ -104,3 +104,42 @@ void JoinScreen::Render() {
   mInputBox->Render();
   mInputBoxTexture->Render();
 }
+
+// =================== ROOM INFO ===================
+RoomInfo::RoomInfo(std::string code, int playerCount) : GameEntity() {
+  mRoomCode = code;
+  mCount = playerCount;
+
+  mBox = new GameEntity(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                                Graphics::Instance()->SCREEN_HEIGHT * 0.5f));
+
+  mCode = new Texture(mRoomCode, "Font/ARCADE.TTF", 32, {255, 255, 255});
+
+  mPlayerCount = new Texture(std::to_string(playerCount) + "/4",
+                             "Font/ARCADE.TTF", 32, {255, 255, 255});
+
+  mCode->Parent(mBox);
+  mCode->Pos(Vector2(-50.0f, 0.0f));
+
+  mPlayerCount->Parent(mBox);
+  mPlayerCount->Pos(Vector2(50.0f, 0.0f));
+}
+
+RoomInfo::~RoomInfo() {
+  delete mBox;
+  mBox = NULL;
+
+  delete mCode;
+  mCode = NULL;
+
+  delete mPlayerCount;
+  mPlayerCount = NULL;
+}
+
+void RoomInfo::Render() {
+  mBox->Render();
+  mCode->Render();
+  mPlayerCount->Render();
+}
+
+void RoomInfo::Update() {}

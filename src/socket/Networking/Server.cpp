@@ -132,9 +132,9 @@ void TSS::Server::handle_game(int client_socket) {
 
     std::string room = game_handler->create_room(username, atoi(map));
 
-    std::cout << "Room id: " << room << std::endl;
+    std::string response_msg = "game:create_room\n" + room;
 
-    responder(client_socket, room);
+    responder(client_socket, response_msg);
   }
 
   if (strcmp(action, "join_room") == 0) {

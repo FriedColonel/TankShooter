@@ -42,9 +42,9 @@ void *auto_recv_message(void *arg) {
     if (event_name == "game:join_room:success") {
       cout << endl << "Join room success " << data << endl;
       Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(*room);
+      client->set_current_room(room);
 
-      cout << "Current room: " << client->get_current_room().room_id << endl;
+      cout << "Current room: " << client->get_current_room()->room_id << endl;
 
       continue;
     }
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
   ThreadPool *thread_pool = new ThreadPool(1);
   thread_pool->add_work(thread_job);
 
-  client->create_room("dung", 1);
+  client->create_room(1);
 
   while (true) {
     char room_id[256];
