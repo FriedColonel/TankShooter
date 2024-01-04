@@ -61,3 +61,14 @@ TSS::Room *TSS::json_to_room(json *j) {
 
   return room;
 }
+
+std::string TSS::get_rooms_list(LinkedList *rooms) {
+  json room_list_json = json::array();
+
+  for (int i = 0; i < rooms->length; i++) {
+    Room *room = static_cast<Room *>(rooms->retrieve(i));
+    room_list_json.push_back(*room_to_json(room));
+  }
+
+  return json_to_string(room_list_json);
+}

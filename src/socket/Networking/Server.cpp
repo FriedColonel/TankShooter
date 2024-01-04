@@ -32,6 +32,14 @@ void TSS::Server::broadcast(std::string msg) {
   }
 }
 
+void TSS::Server::to_everyone_else(int client_socket, std::string msg) {
+  for (int i = 0; i <= max_fd; i++) {
+    if (i != get_sock() && i != client_socket) {
+      responder(i, msg);
+    }
+  }
+}
+
 // Return -1 if connection closed
 int TSS::Server::handler(int client_socket) {
   char buffer[256] = {0};
@@ -141,69 +149,107 @@ void TSS::Server::handle_game(int client_socket) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    std::string joined_room = game_handler->join_room(username, room_id);
+    std::string result = make_response(
+        "game:join_room", game_handler->join_room(username, room_id));
 
-    if (joined_room == "") {
-      joined_room = "game:join_room:failed";
-    } else {
-      joined_room = "game:join_room:success\n" + joined_room;
-    }
-
-    broadcast(joined_room);
+    broadcast(result);
   }
 
   if (strcmp(action, "find_room") == 0) {
     char *room_id = strtok(NULL, ":");
 
-    std::string founded_room = game_handler->find_room(room_id);
-    if (founded_room == "") {
-      founded_room = "game:find_room:failed";
-    } else {
-      founded_room = "game:find_room:success:" + founded_room;
-    }
+    std::string result =
+        make_response("game:find_room", game_handler->find_room(room_id));
 
-    responder(client_socket, founded_room);
+    responder(client_socket, result);
+  }
+
+  if (strcmp(action, "get_rooms") == 0) {
+    std::string result =
+        make_response("game:get_rooms", game_handler->get_rooms_list());
+
+    responder(client_socket, result);
   }
 
   if (strcmp(action, "leave_room") == 0) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
-    if (game_handler->leave_room(username, room_id)) {
-      strcpy(response_msg, "game:leave_room:success");
-    } else {
-      strcpy(response_msg, "game:leave_room:failed");
-    }
+    std::string result = make_response(
+        "game:leave_room", game_handler->leave_room(username, room_id));
 
-    responder(client_socket, response_msg);
+    to_everyone_else(client_socket, result);
   }
 
   if (strcmp(action, "ready") == 0) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
-    if (game_handler->ready(username, room_id)) {
-      strcpy(response_msg, "game:ready:success");
-    } else {
-      strcpy(response_msg, "game:ready:failed");
-    }
+    std::string result =
+        make_response("game:ready", game_handler->ready(username, room_id));
 
-    responder(client_socket, response_msg);
+    broadcast(result);
   }
 
   if (strcmp(action, "unready") == 0) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
-    if (game_handler->unready(username, room_id)) {
-      strcpy(response_msg, "game:unready:success");
-    } else {
-      strcpy(response_msg, "game:unready:failed");
+    std::string result =
+        make_response("game:unready", game_handler->unready(username, room_id));
+
+    broadcast(result);
+  }
+
+  if (strcmp(action, "start") == 0) {
+    char *room_id = strtok(NULL, ":");
+
+    std::string result =
+        make_response("game:start", game_handler->start_game(room_id));
+
+    broadcast(result);
+  }
+
+  if (strcmp(action, "shoot") == 0) {
+    char *username = strtok(NULL, ":");
+    char *pos_x = strtok(NULL, ":");
+    char *pos_y = strtok(NULL, ":");
+    char *direction = strtok(NULL, ":");
+
+    std::string result = "game:shoot\n" + std::string(username) + ":" +
+                         std::string(pos_x) + ":" + std::string(pos_y) + ":" +
+                         std::string(direction);
+
+    to_everyone_else(client_socket, result);
+  }
+
+  if (strcmp(action, "move") == 0) {
+    char *status = strtok(NULL, ":");
+    char *username = strtok(NULL, ":");
+    char *pos_x = strtok(NULL, ":");
+    char *pos_y = strtok(NULL, ":");
+    std::string result = std::string(username) + ":" + std::string(pos_x) +
+                         ":" + std::string(pos_y);
+
+    if (strcmp(status, "start") == 0) {
+      char *direction = strtok(NULL, ":");
+
+      result = "game:move:start\n" + result + std::string(direction);
     }
 
-    responder(client_socket, response_msg);
+    if (strcmp(status, "stop") == 0) {
+      result = "game:move:stop\n" + result;
+    }
+
+    to_everyone_else(client_socket, result);
   }
+}
+
+std::string TSS::Server::make_response(std::string event_name,
+                                       std::string data) {
+  if (data == "") {
+    return event_name + ":failed";
+  }
+
+  return event_name + ":success\n" + data;
 }

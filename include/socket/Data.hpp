@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "LinkedList.hpp"
+
 using json = nlohmann::json;
 using std::to_string;
 
@@ -31,6 +33,7 @@ Room *json_to_room(json *j);
 
 std::string json_to_string(json j);
 json *string_to_json(std::string str);
+std::string get_rooms_list(LinkedList *rooms);
 }  // namespace TSS
 
 #endif

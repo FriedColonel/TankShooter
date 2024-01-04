@@ -61,6 +61,8 @@ int main(int argc, char *argv[]) {
   ThreadPool *thread_pool = new ThreadPool(1);
   thread_pool->add_work(thread_job);
 
+  client->login();
+
   client->create_room(1);
 
   while (true) {
@@ -73,7 +75,9 @@ int main(int argc, char *argv[]) {
 
     if (strcmp(room_id, "\n") == 0) return -1;
 
-    client->join_room("dung", room_id);
+    client->create_room(2);
+
+    client->join_room(room_id);
   }
 
   client->close_socket();

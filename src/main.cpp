@@ -55,6 +55,103 @@ void *auto_recv_message() {
 
       continue;
     }
+
+    if (event_name == "game:get_rooms:success") {
+      cout << endl << "Rooms data" << data << endl;
+
+      continue;
+    }
+
+    if (event_name == "game:find_room:success") {
+      Room *room = json_to_room(string_to_json(data));
+
+      cout << "founed room: " << room->room_id << endl;
+
+      continue;
+    }
+
+    // found other user leave room
+    if (event_name == "game:leave_room:success") {
+      Room *room = json_to_room(string_to_json(data));
+      client->set_current_room(room);
+
+      cout << "Other user outed: " << client->get_current_room()->room_id
+           << endl;
+
+      continue;
+    }
+
+    if (event_name == "game:ready:success") {
+      Room *room = json_to_room(string_to_json(data));
+      client->set_current_room(room);
+
+      cout << "Ready success: " << client->get_current_room()->room_id << endl;
+
+      continue;
+    }
+
+    if (event_name == "game:unready:success") {
+      Room *room = json_to_room(string_to_json(data));
+      client->set_current_room(room);
+
+      cout << "Unready success: " << client->get_current_room()->room_id
+           << endl;
+
+      continue;
+    }
+
+    if (event_name == "game:start:success") {
+      Room *room = json_to_room(string_to_json(data));
+      client->set_current_room(room);
+
+      cout << "Start success: " << client->get_current_room()->room_id << endl;
+
+      continue;
+    }
+
+    // found other user shoot bullet
+    if (event_name == "game:shoot") {
+      string dataStr(data);
+      istringstream iss(dataStr);
+      string username, pos_x, pos_y, direction;
+
+      getline(iss, username, ':');
+      getline(iss, pos_x, ':');
+      getline(iss, pos_y, ':');
+      getline(iss, direction, ':');
+
+      cout << "Bullet start shoot: " << username << " " << pos_x << endl;
+      continue;
+    }
+
+    // found other user start move
+    if (event_name == "game:move:start") {
+      string dataStr(data);
+      istringstream iss(dataStr);
+      string username, pos_x, pos_y, direction;
+
+      getline(iss, username, ':');
+      getline(iss, pos_x, ':');
+      getline(iss, pos_y, ':');
+      getline(iss, direction, ':');
+
+      cout << "Move start" << username << " " << pos_x << endl;
+      continue;
+    }
+
+    // found other user stop move
+    if (event_name == "game:move:stop") {
+      string dataStr(data);
+      istringstream iss(dataStr);
+      string username, pos_x, pos_y;
+
+      getline(iss, username, ':');
+      getline(iss, pos_x, ':');
+      getline(iss, pos_y, ':');
+
+      cout << "Move stop" << username << " " << pos_x << endl;
+      continue;
+    }
   }
 
   return NULL;

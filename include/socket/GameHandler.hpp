@@ -29,9 +29,11 @@ class GameHandler {
   std::string create_room(std::string username, int map);
   std::string join_room(std::string username, char *room_id);
   std::string find_room(char *room_id);
-  bool leave_room(std::string username, char *room_id);
-  bool ready(std::string username, char *room_id);
-  bool unready(std::string username, char *room_id);
+  std::string leave_room(std::string username, char *room_id);
+  std::string ready(std::string username, char *room_id);
+  std::string unready(std::string username, char *room_id);
+  std::string get_rooms_list();
+  std::string start_game(char *room_id);
 };
 }  // namespace TSS
 

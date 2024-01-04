@@ -22,6 +22,7 @@ class Server : public SocketServer {
 
   int accepter();
   int handler(int client_socket);
+  std::string make_response(std::string event_name, std::string data);
 
  public:
   // Constructor
@@ -32,6 +33,8 @@ class Server : public SocketServer {
   void responder(int clent_socket, std::string msg);
   // Broadcast message to all clients
   void broadcast(std::string msg);
+  // Broadcast message to everyone except the sender
+  void to_everyone_else(int client_socket, std::string msg);
   // Handle client events
   void handle_auth(int client_socket);
   // Handle game events

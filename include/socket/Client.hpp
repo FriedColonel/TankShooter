@@ -38,12 +38,20 @@ class Client : public SocketClient {
   Client(int domain, int service, int protocol, int port, char *interface);
   ~Client();
 
-  void sender(char *msg, size_t msg_length);
+  void sender(std::string msg);
   std::string receiver();
 
   // Event handler
   void create_room(int map);
-  void join_room(char *username, char *room_id);
+  void join_room(std::string room_id);
+  void get_rooms();
+  void find_room(std::string room_id);
+  void ready();
+  void unready();
+  void start_game();
+  void shot_bullet(float x, float y, int direction);
+  void move_start(float x, float y, int direction);
+  void move_stop(float x, float y);
 
   void close_socket();
 
