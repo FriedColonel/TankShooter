@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "Data.hpp"
+#include "Helper.hpp"
 #include "Socket.hpp"
 #include "SocketClient.hpp"
 #include "SocketServer.hpp"

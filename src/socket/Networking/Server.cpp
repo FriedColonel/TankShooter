@@ -24,48 +24,61 @@ int TSS::Server::accepter() {
   return client_socket;
 }
 
-void TSS::Server::broadcast(std::string msg) {
-  for (int i = 0; i <= max_fd; i++) {
-    if (i != get_sock()) {
-      responder(i, msg);
+void TSS::Server::broadcast_to_room(int client_socket, std::string msg,
+                                    std::string room_id) {
+  Room *room = game_handler->get_room(room_id);
+
+  if (room == NULL) {
+    responder(client_socket, "game:failed:room_not_found");
+    return;
+  }
+
+  for (int i = 0; i < room->players.size(); i++) {
+    responder(room->players[i].client_socket, msg);
+  }
+}
+
+void TSS::Server::to_everyone_else_in_room(int client_socket, std::string msg,
+                                           std::string room_id) {
+  Room *room = game_handler->get_room(room_id);
+
+  if (room == NULL) {
+    responder(client_socket, "game:failed:room_not_found");
+    return;
+  }
+
+  for (int i = 0; i < room->players.size(); i++) {
+    if (room->players[i].client_socket != client_socket) {
+      responder(room->players[i].client_socket, msg);
     }
   }
 }
 
-void TSS::Server::to_everyone_else(int client_socket, std::string msg) {
-  for (int i = 0; i <= max_fd; i++) {
-    if (i != get_sock() && i != client_socket) {
-      responder(i, msg);
+void TSS::Server::handler(int client_socket) {
+  while (true) {
+    char buffer[256] = {0};
+    size_t bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (bytes_received <= 0) {
+      std::cout << "Connection closed on socket " << client_socket << std::endl;
+      close(client_socket);
+      break;
+    }
+
+    buffer[bytes_received] = '\0';
+
+    std::cout << "Received message: " << buffer << std::endl;
+
+    char *action = strtok(buffer, ":");
+
+    if (strcmp(action, "auth") == 0) {
+      handle_auth(client_socket);
+    }
+
+    if (strcmp(action, "game") == 0) {
+      handle_game(client_socket);
     }
   }
-}
-
-// Return -1 if connection closed
-int TSS::Server::handler(int client_socket) {
-  char buffer[256] = {0};
-  size_t bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
-
-  if (bytes_received <= 0) {
-    std::cout << "Connection closed on socket " << client_socket << std::endl;
-    close(client_socket);
-    return -1;
-  }
-
-  buffer[bytes_received] = '\0';
-
-  std::cout << "Received message: " << buffer << std::endl;
-
-  char *action = strtok(buffer, ":");
-
-  if (strcmp(action, "auth") == 0) {
-    handle_auth(client_socket);
-  }
-
-  if (strcmp(action, "game") == 0) {
-    handle_game(client_socket);
-  }
-
-  return 1;
 }
 
 void TSS::Server::responder(int client_socket, std::string msg) {
@@ -82,50 +95,48 @@ void TSS::Server::launch() {
   while (true) {
     std::cout << "Waiting for client..." << std::endl;
 
-    ready_sockets = current_sockets;
+    // Accept new connection
+    int client_socket = accepter();
 
-    int activity = select(max_fd + 1, &ready_sockets, NULL, NULL, NULL);
-    check_connection(activity);
+    // Create new thread to handle client event
+    std::thread client_thread(&Server::handler, this, client_socket);
 
-    for (int i = 0; i <= max_fd; i++) {
-      if (FD_ISSET(i, &ready_sockets)) {
-        if (i == get_sock()) {
-          // Accept new connection
-          int client_socket = accepter();
-          FD_SET(client_socket, &current_sockets);
-          if (client_socket > max_fd) {
-            max_fd = client_socket;
-          }
-        } else {
-          // Handle connection event
-          if (handler(i) == -1) {
-            FD_CLR(i, &current_sockets);
-          }
-        }
-      }
-    }
+    // Detach thread
+    client_thread.detach();
   }
 }
 
 void TSS::Server::handle_auth(int client_socket) {
   char *action = strtok(NULL, ":");
-  char *username = strtok(NULL, ":");
-  char *password = strtok(NULL, ":");
 
   if (strcmp(action, "login") == 0) {
-    int result = auth_handler->check_user(username, password);
+    char *username = strtok(NULL, ":");
+    char *password = strtok(NULL, ":");
 
-    char response_msg[256] = {0};
+    int result =
+        auth_handler->check_user(std::string(username), std::string(password));
+
+    std::string response_msg;
 
     if (result == 1) {
-      strcpy(response_msg, "auth:login:success");
+      response_msg = "auth:login:success";
     } else if (result == 0) {
-      strcpy(response_msg, "auth:login:password_incorrect");
+      response_msg = "auth:login:password_incorrect";
     } else if (result == 2) {
-      strcpy(response_msg, "auth:login:already_login");
+      response_msg = "auth:login:already_login";
     } else {
-      strcpy(response_msg, "auth:login:user_not_found");
+      response_msg = "auth:login:user_not_found";
     }
+
+    responder(client_socket, response_msg);
+  }
+
+  if (strcmp(action, "logout") == 0) {
+    char *username = strtok(NULL, ":");
+
+    auth_handler->logout(std::string(username));
+
+    std::string response_msg = "auth:logout:success";
 
     responder(client_socket, response_msg);
   }
@@ -138,7 +149,8 @@ void TSS::Server::handle_game(int client_socket) {
     char *username = strtok(NULL, ":");
     char *map = strtok(NULL, ":");
 
-    std::string room = game_handler->create_room(username, atoi(map));
+    std::string room =
+        game_handler->create_room(username, atoi(map), client_socket);
 
     std::string response_msg = "game:create_room:success\n" + room;
 
@@ -150,9 +162,10 @@ void TSS::Server::handle_game(int client_socket) {
     char *room_id = strtok(NULL, ":");
 
     std::string result = make_response(
-        "game:join_room", game_handler->join_room(username, room_id));
+        "game:join_room",
+        game_handler->join_room(username, room_id, client_socket));
 
-    broadcast(result);
+    broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "find_room") == 0) {
@@ -178,7 +191,7 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result = make_response(
         "game:leave_room", game_handler->leave_room(username, room_id));
 
-    to_everyone_else(client_socket, result);
+    to_everyone_else_in_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "ready") == 0) {
@@ -188,7 +201,7 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result =
         make_response("game:ready", game_handler->ready(username, room_id));
 
-    broadcast(result);
+    broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "unready") == 0) {
@@ -198,7 +211,7 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result =
         make_response("game:unready", game_handler->unready(username, room_id));
 
-    broadcast(result);
+    broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "start") == 0) {
@@ -207,10 +220,11 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result =
         make_response("game:start", game_handler->start_game(room_id));
 
-    broadcast(result);
+    broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "shoot") == 0) {
+    char *room_id = strtok(NULL, ":");
     char *username = strtok(NULL, ":");
     char *pos_x = strtok(NULL, ":");
     char *pos_y = strtok(NULL, ":");
@@ -220,11 +234,12 @@ void TSS::Server::handle_game(int client_socket) {
                          std::string(pos_x) + ":" + std::string(pos_y) + ":" +
                          std::string(direction);
 
-    to_everyone_else(client_socket, result);
+    to_everyone_else_in_room(client_socket, result, std::string(room_id));
   }
 
   if (strcmp(action, "move") == 0) {
     char *status = strtok(NULL, ":");
+    char *room_id = strtok(NULL, ":");
     char *username = strtok(NULL, ":");
     char *pos_x = strtok(NULL, ":");
     char *pos_y = strtok(NULL, ":");
@@ -241,7 +256,7 @@ void TSS::Server::handle_game(int client_socket) {
       result = "game:move:stop\n" + result;
     }
 
-    to_everyone_else(client_socket, result);
+    to_everyone_else_in_room(client_socket, result, std::string(room_id));
   }
 }
 

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <thread>
 #include <vector>
 
 #include "tss-handler.hpp"
@@ -21,7 +22,7 @@ class Server : public SocketServer {
   GameHandler *game_handler;
 
   int accepter();
-  int handler(int client_socket);
+  void handler(int client_socket);
   std::string make_response(std::string event_name, std::string data);
 
  public:
@@ -32,9 +33,11 @@ class Server : public SocketServer {
   void launch();
   void responder(int clent_socket, std::string msg);
   // Broadcast message to all clients
-  void broadcast(std::string msg);
+  void broadcast_to_room(int client_socket, std::string msg,
+                         std::string room_id);
   // Broadcast message to everyone except the sender
-  void to_everyone_else(int client_socket, std::string msg);
+  void to_everyone_else_in_room(int client_socket, std::string msg,
+                                std::string room_id);
   // Handle client events
   void handle_auth(int client_socket);
   // Handle game events

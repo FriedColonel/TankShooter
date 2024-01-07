@@ -193,6 +193,11 @@ void *auto_recv_message() {
       cout << "Move stop" << username << " " << pos_x << endl;
       continue;
     }
+
+    if (event_name == "auth:logout:success") {
+      cout << "Logout success" << endl;
+      break;
+    }
   }
 
   return NULL;

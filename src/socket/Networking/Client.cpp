@@ -23,6 +23,7 @@ TSS::Client::Client(int domain, int service, int protocol, int port,
 }
 
 TSS::Client::~Client() {
+  logout();
   close(get_sock());
   delete sInstance;
   sInstance = NULL;
@@ -66,23 +67,29 @@ void TSS::Client::close_socket() { close(get_sock()); }
 
 // Event handler
 bool TSS::Client::login(char *userName, char *password) {
-  char send_message[256];
+  std::string send_msg =
+      "auth:login:" + std::string(userName) + ":" + std::string(password);
 
-  strcpy(send_message, "auth:login:");
-  strcat(send_message, userName);
-  strcat(send_message, ":");
-  strcat(send_message, password);
+  sender(send_msg);
 
-  sender(send_message);
+  std::string recv_msg = receiver();
 
-  if (receiver() == "auth:login:success") {
+  if (recv_msg == "auth:login:success") {
     this->username = std::string(userName);
     return true;
   }
 
-  std::cout << "Login failed" << std::endl;
+  std::cout << recv_msg << std::endl;
 
   return false;
+}
+
+void TSS::Client::logout() {
+  if (username == "") return;
+
+  std::string send_message = "auth:logout:" + username;
+
+  sender(send_message);
 }
 
 void TSS::Client::create_room(int map) {
@@ -90,8 +97,6 @@ void TSS::Client::create_room(int map) {
 
   std::string send_message =
       "game:create_room:" + username + ":" + std::to_string(map);
-
-  // printf("%s\n", send_message.c_str());
 
   sender(send_message);
 }
@@ -135,24 +140,27 @@ void TSS::Client::start_game() {
 }
 
 void TSS::Client::shot_bullet(float x, float y, int direction) {
-  std::string send_message = "game:shoot:" + username + ":" +
-                             std::to_string(x) + ":" + std::to_string(y) + ":" +
+  std::string send_message = "game:shoot:" + currentRoom->room_id + ":" +
+                             username + ":" + std::to_string(x) + ":" +
+                             std::to_string(y) + ":" +
                              std::to_string(direction);
 
   sender(send_message);
 }
 
 void TSS::Client::move_start(float x, float y, int direction) {
-  std::string send_message = "game:move:start:" + username + ":" +
-                             std::to_string(x) + ":" + std::to_string(y) + ":" +
+  std::string send_message = "game:move:start:" + currentRoom->room_id + ":" +
+                             username + ":" + std::to_string(x) + ":" +
+                             std::to_string(y) + ":" +
                              std::to_string(direction);
 
   sender(send_message);
 }
 
 void TSS::Client::move_stop(float x, float y) {
-  std::string send_message = "game:move:stop:" + username + ":" +
-                             std::to_string(x) + ":" + std::to_string(y);
+  std::string send_message = "game:move:stop:" + currentRoom->room_id + ":" +
+                             username + ":" + std::to_string(x) + ":" +
+                             std::to_string(y);
 
   sender(send_message);
 }
@@ -167,11 +175,10 @@ void TSS::Client::login() {
     std::cin.getline(username, 256);
 
     std::cout << "Password: ";
-    std::cin.clear();
-    std::cin.getline(password, 256);
+    strcpy(password, get_password().c_str());
   } while (!login(username, password));
 
-  std::cout << "Login success" << std::endl;
+  std::cout << "\nLogin success" << std::endl;
 }
 
 // void TSS::Client::set_player(Player *player, std::string usrName) {

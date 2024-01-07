@@ -72,3 +72,13 @@ std::string TSS::get_rooms_list(LinkedList *rooms) {
 
   return json_to_string(room_list_json);
 }
+
+json *TSS::user_to_json(User *user) {
+  json *j = new json();
+
+  j->push_back(json::object_t::value_type("username", user->username));
+  j->push_back(json::object_t::value_type("password", user->password));
+  j->push_back(json::object_t::value_type("is_login", user->is_login));
+
+  return j;
+}

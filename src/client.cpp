@@ -78,8 +78,6 @@ int main(int argc, char *argv[]) {
     client->join_room(room_id);
   }
 
-  client->close_socket();
-
   delete thread_pool;
   delete client;
   return 0;

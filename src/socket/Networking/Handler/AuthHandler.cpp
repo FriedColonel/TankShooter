@@ -1,5 +1,7 @@
 #include <socket/AuthHandler.hpp>
 
+std::mutex user_mutex;
+
 TSS::AuthHandler::AuthHandler() { users = new LinkedList(); }
 
 void TSS::AuthHandler::load_users() {
@@ -17,49 +19,56 @@ void TSS::AuthHandler::load_users() {
     std::string username, password, is_login;
     iss >> username >> password >> is_login;
 
-    struct User *user = (struct User *)malloc(sizeof(struct User));
-    user->username = strdup(username.c_str());
-    user->password = strdup(password.c_str());
+    User *user = new User();
+    user->username = username;
+    user->password = password;
     user->is_login = (is_login == "1") ? true : false;
 
     users->insert(0, user, sizeof(struct User));
   }
 }
 
-void TSS::AuthHandler::update_auth_status(User *user, bool is_login) {
+void TSS::AuthHandler::update_auth_status(std::string founed_username,
+                                          bool is_login) {
   load_users();
+
+  std::string saved_users;
 
   // Save users to file
   while (users->length > 0) {
     struct User *remove_user = (struct User *)users->retrieve(0);
 
-    bool save_is_login = (strcmp(remove_user->username, user->username) == 0)
+    bool save_is_login = (remove_user->username == founed_username)
                              ? is_login
                              : remove_user->is_login;
 
-    std::string line = std::string(remove_user->username) + " " +
-                       std::string(remove_user->password) + " " +
-                       std::to_string(save_is_login) + "\n";
-    TSS::append_file(saved_account_path, (void *)line.c_str(), line.length());
+    saved_users = saved_users + std::string(remove_user->username) + " " +
+                  std::string(remove_user->password) + " " +
+                  std::to_string(save_is_login) + "\n";
 
     users->remove(0);
   }
+
+  TSS::write_file(saved_account_path, (void *)saved_users.c_str(),
+                  saved_users.length());
 }
 
 // return
 // -1: User not found, 1: User found, 0: Password incorrect, 2: User is login
-int TSS::AuthHandler::check_user(char *username, char *password) {
+int TSS::AuthHandler::check_user(std::string username, std::string password) {
+  std::lock_guard<std::mutex> lock(user_mutex);
   load_users();
 
-  User *found_user = static_cast<User *>(users->search(username, compare));
+  User *found_user =
+      static_cast<User *>(users->search((char *)username.c_str(), compare));
 
   if (found_user != NULL) {
     if (found_user->is_login) {
       return 2;
     }
 
-    if (strcmp(found_user->password, password) == 0) {
-      // update_auth_status(found_user, true);
+    if (found_user->password == password) {
+      update_auth_status(found_user->username, true);
       return 1;
     } else {
       return 0;
@@ -69,19 +78,16 @@ int TSS::AuthHandler::check_user(char *username, char *password) {
   return -1;
 }
 
+void TSS::AuthHandler::logout(std::string username) {
+  std::lock_guard<std::mutex> lock(user_mutex);
+  update_auth_status(username, false);
+}
+
 int TSS::AuthHandler::compare(void *a, void *b) {
   struct User *user = (struct User *)a;
   char *username = (char *)b;
 
-  if (strcmp(user->username, username) == 0) {
-    return 0;
-  }
-
-  if (strcmp(user->username, username) > 0) {
-    return 1;
-  }
-
-  return -1;
+  return user->username == std::string(username);
 }
 
 // print user list store in linked list

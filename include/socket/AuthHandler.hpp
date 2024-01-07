@@ -3,6 +3,7 @@
 
 #include <string.h>
 
+#include <mutex>
 #include <sstream>
 #include <vector>
 
@@ -10,12 +11,6 @@
 #include "tss-data-structure.hpp"
 
 namespace TSS {
-struct User {
-  char *username;
-  char *password;
-  bool is_login;
-};
-
 class AuthHandler {
  private:
   LinkedList *users;
@@ -24,11 +19,12 @@ class AuthHandler {
   static int compare(void *a, void *b);
   void load_users();
   void print_users();
-  void update_auth_status(User *user, bool is_login);
+  void update_auth_status(std::string founed_username, bool is_login);
 
  public:
   AuthHandler();
-  int check_user(char *username, char *password);
+  int check_user(std::string username, std::string password);
+  void logout(std::string username);
 };
 }  // namespace TSS
 

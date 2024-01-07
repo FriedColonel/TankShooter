@@ -113,7 +113,7 @@ void TSS::LinkedList::sort(int (*compare)(void *a, void *b)) {
 void *TSS::LinkedList::search(void *query, int (*compare)(void *a, void *b)) {
   Node *currentNode = head;
   while (currentNode != NULL) {
-    if (compare(currentNode->data, query) == 0) {
+    if (compare(currentNode->data, query) == 1) {
       return currentNode->data;
     }
 

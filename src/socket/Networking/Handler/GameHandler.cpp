@@ -1,14 +1,19 @@
 #include <socket/GameHandler.hpp>
 
+std::mutex room_mutex;
+
 TSS::GameHandler::GameHandler() { rooms = new LinkedList(); }
 
-std::string TSS::GameHandler::create_room(std::string username, int map) {
+std::string TSS::GameHandler::create_room(std::string username, int map,
+                                          int req_player_socket) {
   // create new player
   Player *player = new Player();
   player->username = username;
   player->tank = 1;
   player->status = 0;
+  player->points = 0;
   player->is_leader = true;
+  player->client_socket = req_player_socket;
 
   // create new room
   Room *room = new Room();
@@ -22,9 +27,12 @@ std::string TSS::GameHandler::create_room(std::string username, int map) {
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::join_room(std::string username, char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
-  // std::cout << "Room id: " << rooms << std::endl;
+std::string TSS::GameHandler::join_room(std::string username,
+                                        std::string room_id,
+                                        int req_player_socket) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
+
   if (room == NULL) {
     return "";
   }
@@ -34,36 +42,22 @@ std::string TSS::GameHandler::join_room(std::string username, char *room_id) {
   player->tank = room->players.size() + 1;
   player->status = 0;
   player->is_leader = false;
+  player->client_socket = req_player_socket;
 
   room->players.push_back(*player);
 
   return json_to_string(*room_to_json(room));
 }
 
-char *TSS::GameHandler::generate_random_string(size_t length) {
-  char *buffer = (char *)malloc(length + 1);
-  char charset[] = "0123456789";
-
-  // Seed the random number generator
-  srand(time(NULL));
-
-  for (size_t i = 0; i < length; i++) {
-    int random_index = rand() % (sizeof(charset) - 1);
-    buffer[i] = charset[random_index];
-  }
-
-  buffer[length] = '\0';  // Null-terminate the string
-
-  return buffer;
-}
-
-std::string TSS::GameHandler::find_room(char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
+std::string TSS::GameHandler::find_room(std::string room_id) {
+  Room *room = get_room(room_id);
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::leave_room(std::string username, char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
+std::string TSS::GameHandler::leave_room(std::string username,
+                                         std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
   if (room == NULL) {
     return "";
   }
@@ -78,8 +72,9 @@ std::string TSS::GameHandler::leave_room(std::string username, char *room_id) {
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::ready(std::string username, char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
+std::string TSS::GameHandler::ready(std::string username, std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
   if (room == NULL) {
     return "";
   }
@@ -97,8 +92,10 @@ std::string TSS::GameHandler::ready(std::string username, char *room_id) {
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::unready(std::string username, char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
+std::string TSS::GameHandler::unready(std::string username,
+                                      std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
   if (room == NULL) {
     return "";
   }
@@ -113,19 +110,9 @@ std::string TSS::GameHandler::unready(std::string username, char *room_id) {
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::get_rooms_list() {
-  json room_list_json = json::array();
-
-  for (int i = 0; i < rooms->length; i++) {
-    Room *room = static_cast<Room *>(rooms->retrieve(i));
-    room_list_json.push_back(*room_to_json(room));
-  }
-
-  return json_to_string(room_list_json);
-}
-
-std::string TSS::GameHandler::start_game(char *room_id) {
-  Room *room = static_cast<Room *>(rooms->search(room_id, compare));
+std::string TSS::GameHandler::start_game(std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
   if (room == NULL) {
     return "";
   }
@@ -139,13 +126,24 @@ int TSS::GameHandler::compare(void *a, void *b) {
   struct Room *room = (struct Room *)a;
   char *room_id = (char *)b;
 
-  if (strcmp(room->room_id.c_str(), room_id) == 0) {
-    return 0;
+  return room->room_id == std::string(room_id);
+}
+
+// Getters function
+std::string TSS::GameHandler::get_rooms_list() {
+  json room_list_json = json::array();
+
+  for (int i = 0; i < rooms->length; i++) {
+    Room *room = static_cast<Room *>(rooms->retrieve(i));
+    room_list_json.push_back(*room_to_json(room));
   }
 
-  if (strcmp(room->room_id.c_str(), room_id) > 0) {
-    return 1;
-  }
+  return json_to_string(room_list_json);
+}
 
-  return -1;
+TSS::Room *TSS::GameHandler::get_room(std::string room_id) {
+  Room *room =
+      static_cast<Room *>(rooms->search((char *)room_id.c_str(), compare));
+
+  return room;
 }
