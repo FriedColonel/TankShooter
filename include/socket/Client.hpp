@@ -31,6 +31,8 @@ class Client : public SocketClient {
   bool login(char *username, char *password);
 
  public:
+  LinkedList *rooms;
+
   static Client *Instance();
   static Client *Instance(int port, char *interface);
   static void Release();

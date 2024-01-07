@@ -73,6 +73,15 @@ std::string TSS::get_rooms_list(LinkedList *rooms) {
   return json_to_string(room_list_json);
 }
 
+void TSS::json_to_rooms_list(std::string str, LinkedList *rooms) {
+  json *j = string_to_json(str);
+
+  for (int i = 0; i < j->size(); i++) {
+    Room *room = json_to_room(&j->at(i));
+    rooms->insert(0, room, sizeof(struct Room));
+  }
+}
+
 json *TSS::user_to_json(User *user) {
   json *j = new json();
 

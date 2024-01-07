@@ -84,6 +84,10 @@ void *auto_recv_message() {
     if (event_name == "game:get_rooms:success") {
       cout << endl << "Rooms data" << data << endl;
 
+      json_to_rooms_list(data, client->rooms);
+
+      cout << "Rooms list: " << client->rooms->length << endl;
+
       continue;
     }
 

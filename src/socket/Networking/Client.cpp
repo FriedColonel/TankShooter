@@ -19,6 +19,8 @@ void TSS::Client::Release() {
 TSS::Client::Client(int domain, int service, int protocol, int port,
                     char *interface)
     : SocketClient(domain, service, protocol, port, interface) {
+  rooms = new LinkedList();
+
   currentRoom = NULL;
 }
 

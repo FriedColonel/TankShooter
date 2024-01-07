@@ -41,6 +41,7 @@ struct Room {
 json *room_to_json(Room *room);
 Room *json_to_room(json *j);
 std::string get_rooms_list(LinkedList *rooms);
+void json_to_rooms_list(std::string str, LinkedList *rooms);
 
 // user converter
 json *user_to_json(User *user);

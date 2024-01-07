@@ -48,6 +48,16 @@ void *auto_recv_message(void *arg) {
 
       continue;
     }
+
+    if (event_name == "game:get_rooms:success") {
+      cout << endl << "Rooms data" << data << endl;
+
+      json_to_rooms_list(data, client->rooms);
+
+      cout << "Rooms list: " << client->rooms->length << endl;
+
+      continue;
+    }
   }
 
   return NULL;
@@ -65,18 +75,7 @@ int main(int argc, char *argv[]) {
 
   client->create_room(1);
 
-  while (true) {
-    char room_id[256];
-
-    cout << "Enter room id: ";
-
-    cin.clear();
-    cin.getline(room_id, 256);
-
-    if (strcmp(room_id, "\n") == 0) return -1;
-
-    client->join_room(room_id);
-  }
+  client->get_rooms();
 
   delete thread_pool;
   delete client;
