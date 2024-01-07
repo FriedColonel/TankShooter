@@ -9,11 +9,16 @@ using namespace QuickSDL;
 
 class MapChooseScreen : public GameEntity {
  private:
+  static MapChooseScreen* sInstance;
+
   Texture* mTitle;
 
   InputManager* mInput;
 
   GameEntity* mChooseBox;
+  Texture* mMap1Title;
+  Texture* mMap2Title;
+  Texture* mMap3Title;
   Texture* mMap1;
   Texture* mMap2;
   Texture* mMap3;
@@ -26,6 +31,7 @@ class MapChooseScreen : public GameEntity {
   Vector2 mCursorStartPos;
 
  public:
+  static MapChooseScreen* Instance();
   MapChooseScreen();
   ~MapChooseScreen();
 

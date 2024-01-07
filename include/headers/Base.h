@@ -31,9 +31,10 @@ class Base : public PhysicEntity {
   AnimatedTexture* mDeathAnimation;
   Brick* mWalls[3];
 
-  Tank* mTank;
-
   BASE_POSITION mBasePosition;
+
+ public:
+  Tank* mTank;
 
  private:
   void HandlePlayerDeath();
@@ -44,6 +45,9 @@ class Base : public PhysicEntity {
   ~Base();
 
   bool WasHit();
+
+  void ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                      bool moving);
 
   void Hit(PhysicEntity* other) override;
 

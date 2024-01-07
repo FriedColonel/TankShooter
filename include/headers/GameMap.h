@@ -5,6 +5,7 @@
 #include <QuickSDL/Texture.h>
 #include <headers/Brick.h>
 
+#include <socket/Client.hpp>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,7 @@ class GameMap : public GameEntity {
 
   Texture* mBackground;
 
-  std::vector<GameEntity*> mBricks;
+  std::vector<Brick*> mBricks;
 
  public:
   static GameMap* Instance();

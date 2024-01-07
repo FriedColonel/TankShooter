@@ -19,13 +19,13 @@ ScreenManager::ScreenManager() {
   mInput = InputManager::Instance();
   mClient = TSS::Client::Instance();
 
-  mStartScreen = new StartScreen();
   mCurrentScreen = start;
 
-  mJoinScreen = new JoinScreen();
-  mPlayScreen = new PlayScreen();
-  mLobbyScreen = new LobbyScreen();
-  mMapChooseScreen = new MapChooseScreen();
+  mStartScreen = StartScreen::Instance();
+  mJoinScreen = JoinScreen::Instance();
+  mPlayScreen = PlayScreen::Instance();
+  mLobbyScreen = LobbyScreen::Instance();
+  mMapChooseScreen = MapChooseScreen::Instance();
   mGameMap = GameMap::Instance();
 }
 
@@ -58,7 +58,6 @@ void ScreenManager::Update() {
         mCurrentScreen = start;
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
         mCurrentScreen = lobby;
-        mGameMap->SetMapChoice(mMapChooseScreen->GetSelectedMap());
         mClient->create_room(mMapChooseScreen->GetSelectedMap());
       }
       break;
@@ -68,8 +67,14 @@ void ScreenManager::Update() {
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
-        mCurrentScreen = play;
-        mPlayScreen->StartNewGame();
+        mClient->start_game();
+      }
+
+      if (mClient->get_current_room()) {
+        if (mClient->get_current_room()->status == 2) {
+          mCurrentScreen = play;
+          mPlayScreen->StartNewGame();
+        }
       }
       break;
 
@@ -78,8 +83,9 @@ void ScreenManager::Update() {
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
-        mCurrentScreen = play;
-        mPlayScreen->StartNewGame();
+        mCurrentScreen = lobby;
+        printf("Joining room %s\n", mJoinScreen->InputText().c_str());
+        mClient->join_room(mJoinScreen->InputText().c_str());
       }
       break;
 

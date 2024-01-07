@@ -28,6 +28,8 @@ class RoomInfo : GameEntity {
 
 class JoinScreen : public GameEntity {
  private:
+  static JoinScreen* sInstance;
+
   InputManager* mInput;
 
   // title bar
@@ -42,6 +44,7 @@ class JoinScreen : public GameEntity {
   void UpdateInputText(char c);
 
  public:
+  static JoinScreen* Instance();
   JoinScreen();
   ~JoinScreen();
 

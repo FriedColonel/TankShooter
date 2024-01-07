@@ -1,7 +1,17 @@
 #include <headers/LobbyScreen.h>
 
+LobbyScreen* LobbyScreen::sInstance = NULL;
+
+LobbyScreen* LobbyScreen::Instance() {
+  if (sInstance == NULL) {
+    sInstance = new LobbyScreen();
+  }
+  return sInstance;
+}
+
 LobbyScreen::LobbyScreen() {
   Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f, 0.0f));
+  mInput = InputManager::Instance();
 
   mClient = TSS::Client::Instance();
 
@@ -16,7 +26,9 @@ LobbyScreen::LobbyScreen() {
 
   mRoomCode = NULL;
 
-  TSS::Room* room = mClient->get_current_room();
+  for (int i = 0; i < 4; i++) {
+    mPlayerInfo[i] = NULL;
+  }
 }
 
 LobbyScreen::~LobbyScreen() {
@@ -37,14 +49,30 @@ void LobbyScreen::Update() {
     SetRoomCode(mClient->get_current_room()->room_id);
 
     for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
-      printf("Test test\n");
+      if (mPlayerInfo[i] != NULL) {
+        delete mPlayerInfo[i];
+        mPlayerInfo[i] = NULL;
+      }
 
       mPlayerInfo[i] = new PlayerInfo(
           mClient->get_current_room()->players[i].username,
           static_cast<COLOR>(mClient->get_current_room()->players[i].tank),
           mClient->get_current_room()->players[i].username ==
               mClient->get_username(),
-          i);
+          i, !!mClient->get_current_room()->players[i].status,
+          mClient->get_current_room()->players[i].is_leader);
+    }
+  }
+
+  if (mInput->KeyPressed(SDL_SCANCODE_SPACE)) {
+    for (int i = 0; i < 4; i++) {
+      if (mPlayerInfo[i] != NULL && mPlayerInfo[i]->isThisPlayer) {
+        if (mPlayerInfo[i]->mIsReady) {
+          mClient->unready();
+        } else {
+          mClient->ready();
+        }
+      }
     }
   }
 }

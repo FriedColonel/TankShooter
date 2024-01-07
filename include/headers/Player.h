@@ -8,7 +8,6 @@
 #include <headers/Base.h>
 #include <headers/Bullet.h>
 #include <headers/PhysicEntity.h>
-#include <headers/Tank.h>
 
 using namespace QuickSDL;
 
@@ -27,6 +26,10 @@ class Player : public GameEntity {
   ~Player();
 
   void Alive(bool alive);
+
+  void ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                      bool moving = true);
+  void Shoot(Vector2 pos, GameEntity::DIRECTION direction);
 
   void Update();
   void Render();

@@ -115,42 +115,44 @@ void TSS::Client::find_room(std::string room_id) {
 }
 
 void TSS::Client::ready() {
-  std::string send_message = "game:ready:" + username;
+  std::string send_message =
+      "game:ready:" + username + ":" + currentRoom->room_id;
 
   sender(send_message);
 }
 
 void TSS::Client::unready() {
-  std::string send_message = "game:unready:" + username;
+  std::string send_message =
+      "game:unready:" + username + ":" + currentRoom->room_id;
 
   sender(send_message);
 }
 
 void TSS::Client::start_game() {
-  std::string send_message = "game:start";
+  std::string send_message = "game:start:" + currentRoom->room_id;
 
   sender(send_message);
 }
 
 void TSS::Client::shot_bullet(float x, float y, int direction) {
-  std::string send_message = "game:shot:" + username + std::to_string(x) + ":" +
-                             std::to_string(y) + ":" +
+  std::string send_message = "game:shoot:" + username + ":" +
+                             std::to_string(x) + ":" + std::to_string(y) + ":" +
                              std::to_string(direction);
 
   sender(send_message);
 }
 
 void TSS::Client::move_start(float x, float y, int direction) {
-  std::string send_message = "game:move:start:" + username + std::to_string(x) +
-                             ":" + std::to_string(y) + ":" +
+  std::string send_message = "game:move:start:" + username + ":" +
+                             std::to_string(x) + ":" + std::to_string(y) + ":" +
                              std::to_string(direction);
 
   sender(send_message);
 }
 
 void TSS::Client::move_stop(float x, float y) {
-  std::string send_message = "game:move:stop:" + username + std::to_string(x) +
-                             ":" + std::to_string(y);
+  std::string send_message = "game:move:stop:" + username + ":" +
+                             std::to_string(x) + ":" + std::to_string(y);
 
   sender(send_message);
 }
@@ -172,8 +174,15 @@ void TSS::Client::login() {
   std::cout << "Login success" << std::endl;
 }
 
+// void TSS::Client::set_player(Player *player, std::string usrName) {
+//   players[usrName] = player;
+// }
+
 // Getter function
 TSS::Room *TSS::Client::get_current_room() { return currentRoom; }
+// Player *TSS::Client::get_player(std::string username) {
+//   return players[username];
+// }
 
 // Setter function
 void TSS::Client::set_current_room(Room *room) { currentRoom = room; }

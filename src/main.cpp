@@ -1,5 +1,5 @@
 #include <QuickSDL/GameManager.h>
-#include <headers/ScreenManager.h>
+#include <headers/PlayScreen.h>
 
 #include <mutex>
 #include <socket/Client.hpp>
@@ -9,6 +9,31 @@
 
 using namespace TSS;
 using namespace std;
+
+void *auto_recv_message();
+
+int main(int argc, char const *argv[]) {
+  if (argc < 3) {
+    std::cout << "Usage: " << argv[0] << " <interface> <port>" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
+  client->login();
+
+  QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();
+  thread recv_thread(auto_recv_message);
+  recv_thread.detach();
+  game->Run();
+
+  QuickSDL::GameManager::Release();
+  game = NULL;
+
+  TSS::Client::Release();
+  client = NULL;
+
+  return 0;
+}
 
 void *auto_recv_message() {
   Client *client = Client::Instance();
@@ -120,6 +145,10 @@ void *auto_recv_message() {
       getline(iss, pos_y, ':');
       getline(iss, direction, ':');
 
+      PlayScreen *playScreen = PlayScreen::Instance();
+      playScreen->Shoot(username, Vector2(stof(pos_x), stof(pos_y)),
+                        static_cast<GameEntity::DIRECTION>(stoi(direction)));
+
       cout << "Bullet start shoot: " << username << " " << pos_x << endl;
       continue;
     }
@@ -135,7 +164,14 @@ void *auto_recv_message() {
       getline(iss, pos_y, ':');
       getline(iss, direction, ':');
 
+      PlayScreen *playScreen = PlayScreen::Instance();
+
       cout << "Move start" << username << " " << pos_x << endl;
+
+      playScreen->SetPlayerPosition(
+          username, Vector2(stof(pos_x), stof(pos_y)), true,
+          static_cast<GameEntity::DIRECTION>(stoi(direction)));
+
       continue;
     }
 
@@ -149,34 +185,15 @@ void *auto_recv_message() {
       getline(iss, pos_x, ':');
       getline(iss, pos_y, ':');
 
+      PlayScreen *playScreen = PlayScreen::Instance();
+
+      playScreen->SetPlayerPosition(username, Vector2(stof(pos_x), stof(pos_y)),
+                                    false, GameEntity::DIRECTION::none);
+
       cout << "Move stop" << username << " " << pos_x << endl;
       continue;
     }
   }
 
   return NULL;
-}
-
-int main(int argc, char const *argv[]) {
-  if (argc < 3) {
-    std::cout << "Usage: " << argv[0] << " <interface> <port>" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
-  TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
-  client->login();
-
-  thread recv_thread(auto_recv_message);
-  recv_thread.detach();
-
-  QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();
-  game->Run();
-
-  QuickSDL::GameManager::Release();
-  game = NULL;
-
-  TSS::Client::Release();
-  client = NULL;
-
-  return 0;
 }

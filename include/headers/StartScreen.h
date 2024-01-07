@@ -8,6 +8,8 @@ using namespace QuickSDL;
 
 class StartScreen : public GameEntity {
  private:
+  static StartScreen* sInstance;
+
   Timer* mTimer;
   InputManager* mInput;
 
@@ -31,6 +33,7 @@ class StartScreen : public GameEntity {
   Texture* mTitle;
 
  public:
+  static StartScreen* Instance();
   StartScreen();
   ~StartScreen();
 

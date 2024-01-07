@@ -1,5 +1,14 @@
 #include <headers/StartScreen.h>
 
+StartScreen* StartScreen::sInstance = NULL;
+
+StartScreen* StartScreen::Instance() {
+  if (sInstance == NULL) {
+    sInstance = new StartScreen();
+  }
+  return sInstance;
+}
+
 StartScreen::StartScreen() {
   mTimer = Timer::Instance();
   mInput = InputManager::Instance();

@@ -42,9 +42,8 @@ GameMap::GameMap(int mapChoice) : GameEntity() {
 GameMap::~GameMap() {
   mGraphics = NULL;
 
-  for (int i = 0; i < mBricks.size(); i++) {
-    delete mBricks[i];
-    mBricks[i] = NULL;
+  for (Brick* brick : mBricks) {
+    delete brick;
   }
 
   delete mBackground;
@@ -52,16 +51,16 @@ GameMap::~GameMap() {
 }
 
 void GameMap::Update() {
-  for (int i = 0; i < mBricks.size(); i++) {
-    mBricks[i]->Update();
+  for (Brick* brick : mBricks) {
+    if (brick != NULL) brick->Update();
   }
 }
 
 void GameMap::Render() {
   mBackground->Render();
 
-  for (int i = 0; i < mBricks.size(); i++) {
-    mBricks[i]->Render();
+  for (Brick* brick : mBricks) {
+    if (brick != NULL) brick->Render();
   }
 }
 
@@ -84,4 +83,13 @@ void GameMap::SetMapChoice(int mapChoice) {
   }
 }
 
-void GameMap::Reset() { mBricks.clear(); }
+void GameMap::Reset() {
+  for (Brick* brick : mBricks) {
+    delete brick;
+  }
+
+  mBricks.clear();
+
+  // create a new brick vector
+  mBricks = std::vector<Brick*>();
+}

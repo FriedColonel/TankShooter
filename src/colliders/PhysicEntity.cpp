@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-PhysicEntity::PhysicEntity() {
+PhysicEntity::PhysicEntity() : GameEntity() {
   mBroadPhaseCollider = nullptr;
   mId = 0;
 }

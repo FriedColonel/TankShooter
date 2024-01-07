@@ -75,8 +75,6 @@ int main(int argc, char *argv[]) {
 
     if (strcmp(room_id, "\n") == 0) return -1;
 
-    client->create_room(2);
-
     client->join_room(room_id);
   }
 

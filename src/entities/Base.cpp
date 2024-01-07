@@ -16,7 +16,7 @@ Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
   mColor = color;
 
   mId =
-      mPhysicMgr->RegisterEntity(this, PhysicManager::CollisionLayers::Hostile);
+      mPhysicMgr->RegisterEntity(this, PhysicManager::CollisionLayers::Terrain);
 
   mTank = new Tank(isThisPlayer, basePos, color);
 
@@ -135,6 +135,11 @@ void Base::Hit(PhysicEntity* other) {
       mWalls[i]->Dead();
     }
   }
+}
+
+void Base::ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                          bool moving) {
+  mTank->ChangePosition(pos, direction, moving);
 }
 
 void Base::Update() {

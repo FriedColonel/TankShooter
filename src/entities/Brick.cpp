@@ -5,7 +5,7 @@
 
 Brick::Brick() {
   mId = PhysicManager::Instance()->RegisterEntity(
-      this, PhysicManager::CollisionLayers::Hostile);
+      this, PhysicManager::CollisionLayers::Terrain);
 
   mHealth = mMaxHealth;
 

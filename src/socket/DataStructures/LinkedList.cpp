@@ -111,32 +111,13 @@ void TSS::LinkedList::sort(int (*compare)(void *a, void *b)) {
 }
 
 void *TSS::LinkedList::search(void *query, int (*compare)(void *a, void *b)) {
-  int position = length / 2;
-  int min_checked = 0;
-  int max_checked = length;
-  while (max_checked > min_checked) {
-    void *data = retrieve(position);
-    if (data == NULL) {
-      return NULL;
+  Node *currentNode = head;
+  while (currentNode != NULL) {
+    if (compare(currentNode->data, query) == 0) {
+      return currentNode->data;
     }
 
-    if (compare(data, query) == 1) {
-      max_checked = position;
-      if (position != (min_checked + position) / 2) {
-        position = (min_checked + position) / 2;
-      } else {
-        break;
-      }
-    } else if (compare(data, query) == -1) {
-      min_checked = position;
-      if (position != (max_checked + position) / 2) {
-        position = (max_checked + position) / 2;
-      } else {
-        break;
-      }
-    } else {
-      return data;
-    }
+    currentNode = currentNode->next;
   }
 
   return NULL;

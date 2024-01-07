@@ -234,7 +234,7 @@ void TSS::Server::handle_game(int client_socket) {
     if (strcmp(status, "start") == 0) {
       char *direction = strtok(NULL, ":");
 
-      result = "game:move:start\n" + result + std::string(direction);
+      result = "game:move:start\n" + result + ":" + std::string(direction);
     }
 
     if (strcmp(status, "stop") == 0) {

@@ -24,6 +24,15 @@ Player::~Player() {
 
 void Player::Alive(bool alive) { mAlive = alive; }
 
+void Player::ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                            bool moving) {
+  mBase->mTank->ChangePosition(pos, direction, moving);
+}
+
+void Player::Shoot(Vector2 pos, GameEntity::DIRECTION direction) {
+  mBase->mTank->Shoot(pos, direction);
+}
+
 void Player::Update() {
   if (mBase->WasHit()) {
     mAlive = false;

@@ -52,23 +52,27 @@ GameManager::GameManager() {
   mPhysicMgr->SetLayerCollisionMask(
       PhysicManager::CollisionLayers::Friendly,
       PhysicManager::CollisionFlags::Hostile |
-          PhysicManager::CollisionFlags::HostileProjectiles);
+          PhysicManager::CollisionFlags::HostileProjectiles |
+          PhysicManager::CollisionFlags::Terrain);
   mPhysicMgr->SetLayerCollisionMask(
       PhysicManager::CollisionLayers::FriendlyProjectiles,
-      PhysicManager::CollisionFlags::Hostile);
+      PhysicManager::CollisionFlags::Hostile |
+          PhysicManager::CollisionFlags::Terrain);
   mPhysicMgr->SetLayerCollisionMask(
       PhysicManager::CollisionLayers::Hostile,
       PhysicManager::CollisionFlags::Friendly |
-          PhysicManager::CollisionFlags::FriendlyProjectiles);
+          PhysicManager::CollisionFlags::FriendlyProjectiles |
+          PhysicManager::CollisionFlags::Terrain);
   mPhysicMgr->SetLayerCollisionMask(
       PhysicManager::CollisionLayers::HostileProjectiles,
-      PhysicManager::CollisionFlags::Friendly);
-  mPhysicMgr->SetLayerCollisionMask(
-      PhysicManager::CollisionLayers::Terrain,
       PhysicManager::CollisionFlags::Friendly |
-          PhysicManager::CollisionFlags::Hostile |
-          PhysicManager::CollisionFlags::FriendlyProjectiles |
-          PhysicManager::CollisionFlags::HostileProjectiles);
+          PhysicManager::CollisionFlags::Terrain);
+  // mPhysicMgr->SetLayerCollisionMask(
+  //     PhysicManager::CollisionLayers::Terrain,
+  //     PhysicManager::CollisionFlags::Friendly |
+  //         PhysicManager::CollisionFlags::Hostile |
+  //         PhysicManager::CollisionFlags::FriendlyProjectiles |
+  //         PhysicManager::CollisionFlags::HostileProjectiles);
 
   // Initialize ScreenManager
   mScreenMgr = ScreenManager::Instance();

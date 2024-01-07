@@ -2,6 +2,15 @@
 
 #include <iostream>
 
+JoinScreen* JoinScreen::sInstance = NULL;
+
+JoinScreen* JoinScreen::Instance() {
+  if (sInstance == NULL) {
+    sInstance = new JoinScreen();
+  }
+  return sInstance;
+}
+
 JoinScreen::JoinScreen() {
   mInput = InputManager::Instance();
 

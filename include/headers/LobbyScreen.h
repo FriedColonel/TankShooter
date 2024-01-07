@@ -12,19 +12,24 @@
 using namespace QuickSDL;
 
 class PlayerInfo : public GameEntity {
+ public:
   std::string name;
   GameEntity::COLOR color;
   bool isThisPlayer;
+  bool mIsReady;
 
+ private:
   Texture* mPlayerName;
   AnimatedTexture* mBase;
   AnimatedTexture* mWeapon;
+  Texture* mReady;
+  Texture* mCrown;
 
-  bool mIsReady;
+  bool mIsLeader;
 
  public:
   PlayerInfo(std::string _name, GameEntity::COLOR _color, bool isThisPlayer,
-             int index)
+             int index, bool isReady = false, bool isLeader = false)
       : name(_name), color(_color), isThisPlayer(isThisPlayer) {
     Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                 500.0f + index * 80.0f));
@@ -33,7 +38,8 @@ class PlayerInfo : public GameEntity {
     mPlayerName->Parent(this);
     mPlayerName->Pos(Vector2(-150.0f, 0.0f));
 
-    mIsReady = false;
+    mIsReady = isReady;
+    mIsLeader = isLeader;
 
     mBase = new AnimatedTexture(
         "Tank/" + colorMap.at(color) + "/Bodies/body_halftrack.png", 0, 0,
@@ -51,6 +57,16 @@ class PlayerInfo : public GameEntity {
     mWeapon->Parent(this);
     mWeapon->Pos(Vector2(150.0f, 0.0f));
     mWeapon->Scale(Vector2(0.7f, 0.7f));
+
+    mReady = new Texture("Check/check.jpg");
+    mReady->Parent(this);
+    mReady->Pos(Vector2(300.0f, 0.0f));
+    mReady->Scale(Vector2(0.1f, 0.1f));
+
+    mCrown = new Texture("Menu/queen-crown.png");
+    mCrown->Parent(this);
+    mCrown->Pos(Vector2(-300.0f, 0.0f));
+    mCrown->Scale(Vector2(0.75f, 0.75f));
   }
 
   ~PlayerInfo() {
@@ -64,15 +80,25 @@ class PlayerInfo : public GameEntity {
     mWeapon = NULL;
   }
 
+  void ToggleReady() { mIsReady = !mIsReady; }
+
   void Render() {
     mPlayerName->Render();
     mBase->Render();
     mWeapon->Render();
+
+    if (mIsReady) mReady->Render();
+
+    if (mIsLeader) mCrown->Render();
   }
 };
 
 class LobbyScreen : public GameEntity {
  private:
+  static LobbyScreen* sInstance;
+
+  InputManager* mInput;
+
   Texture* mTitle;
   Texture* mInstruction;
   Texture* mRoomCode;
@@ -82,6 +108,7 @@ class LobbyScreen : public GameEntity {
   struct PlayerInfo* mPlayerInfo[4];
 
  public:
+  static LobbyScreen* Instance();
   void Update();
   void Render();
 

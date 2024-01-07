@@ -10,6 +10,7 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
   mInput = InputManager::Instance();
   mPhysicMgr = PhysicManager::Instance();
   mGraphics = Graphics::Instance();
+  mClient = TSS::Client::Instance();
 
   mIsThisPlayer = isThisPlayer;
 
@@ -88,6 +89,7 @@ Tank::~Tank() {
   mTimer = NULL;
   mInput = NULL;
   mPhysicMgr = NULL;
+  mGraphics = NULL;
 
   delete mBase;
   mBase = NULL;
@@ -105,27 +107,33 @@ Tank::~Tank() {
 }
 
 void Tank::HandleMovement() {
-  if (mInput->KeyReleased(SDL_SCANCODE_A) ||
-      mInput->KeyReleased(SDL_SCANCODE_D) ||
-      mInput->KeyReleased(SDL_SCANCODE_W) ||
-      mInput->KeyReleased(SDL_SCANCODE_S)) {
-    mIsMoving = false;
-  }
+  if (mIsThisPlayer) {
+    if (!mInput->KeyDown(SDL_SCANCODE_A) && !mInput->KeyDown(SDL_SCANCODE_D) &&
+        !mInput->KeyDown(SDL_SCANCODE_W) && !mInput->KeyDown(SDL_SCANCODE_S) &&
+        mIsMoving) {
+      mIsMoving = false;
+      mClient->move_stop(Pos().x, Pos().y);
+    }
 
-  if (mInput->KeyDown(SDL_SCANCODE_A)) {
-    mIsMoving = true;
-    mDirection = left;
-  } else if (mInput->KeyDown(SDL_SCANCODE_D)) {
-    mIsMoving = true;
-    mDirection = right;
-  } else if (mInput->KeyDown(SDL_SCANCODE_W)) {
-    mIsMoving = true;
-    mDirection = up;
-  } else if (mInput->KeyDown(SDL_SCANCODE_S)) {
-    mIsMoving = true;
-    mDirection = down;
-  } else if (mInput->KeyDown(SDL_SCANCODE_J)) {
-    Dead();
+    if (mInput->KeyPressed(SDL_SCANCODE_A)) {
+      mIsMoving = true;
+      mDirection = left;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_D)) {
+      mIsMoving = true;
+      mDirection = right;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_W)) {
+      mIsMoving = true;
+      mDirection = up;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_S)) {
+      mIsMoving = true;
+      mDirection = down;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_J)) {
+      Dead();
+    }
   }
 
   if (mIsMoving) {
@@ -188,9 +196,39 @@ void Tank::Shoot() {
     if (!mBullets[i]->Active()) {
       mAnimating = true;
       mBullets[i]->Fire(Pos(), mFireDirection);
+      mClient->shot_bullet(Pos().x, Pos().y, mFireDirection);
       break;
     }
   }
+}
+
+void Tank::Shoot(Vector2 pos, GameEntity::DIRECTION direction) {
+  if (mAnimating) {
+    return;
+  }
+
+  for (int i = 0; i < MAX_BULLETS; i++) {
+    if (!mBullets[i]->Active()) {
+      mAnimating = true;
+      mBullets[i]->Fire(pos, direction);
+      // Pos(pos);
+      break;
+    }
+  }
+}
+
+void Tank::StopMoving(Vector2 pos, GameEntity::DIRECTION direction) {
+  mIsMoving = false;
+  mDirection = direction;
+  Pos(pos);
+}
+
+void Tank::ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                          bool moving) {
+  mIsMoving = moving;
+  mDirection = direction;
+  printf("Change direction: %d\n", direction);
+  Pos(pos);
 }
 
 void Tank::Dead() {
@@ -204,7 +242,6 @@ bool Tank::WasHit() { return mWasHit; }
 
 void Tank::Hit(PhysicEntity* other) {
   if (instanceof <Brick>(other) || instanceof <Base>(other)) {
-    mIsMoving = false;
     switch (mDirection) {
       case up:
         Translate(-2 * VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
@@ -246,8 +283,8 @@ void Tank::Update() {
   }
 
   if (mAlive) {
+    HandleMovement();
     if (mIsThisPlayer) {
-      HandleMovement();
       HandleFiring();
     }
   }

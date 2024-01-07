@@ -29,14 +29,14 @@ class GameEntity {
   // Position/Rotation/Scale associated with each space
   //---------------------------------------------------------------------------------------------------------------------
   enum SPACE { local = 0, world = 1 };
-  enum DIRECTION { left = 0, right = 1, up = 2, down = 3 };
+  enum DIRECTION { left = 1, right = 2, up = 3, down = 4, none = 5 };
   enum BASE_POSITION {
     bottomLeft = 0,
     bottomRight = 1,
     topRight = 2,
     topLeft = 3
   };
-  enum COLOR { red = 0, purple = 1, camo = 2, blue = 3 };
+  enum COLOR { red = 1, purple = 2, camo = 3, blue = 4 };
   std::map<COLOR, std::string> colorMap = {
       {red, "Red"}, {purple, "Purple"}, {camo, "Camo"}, {blue, "Blue"}};
 

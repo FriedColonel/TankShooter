@@ -7,7 +7,7 @@ std::string TSS::GameHandler::create_room(std::string username, int map) {
   Player *player = new Player();
   player->username = username;
   player->tank = 1;
-  player->status = 1;
+  player->status = 0;
   player->is_leader = true;
 
   // create new room
@@ -86,10 +86,13 @@ std::string TSS::GameHandler::ready(std::string username, char *room_id) {
 
   for (int i = 0; i < room->players.size(); i++) {
     if (room->players[i].username == username) {
+      printf("Founded username: %s\n", room->players[i].username.c_str());
       room->players[i].status = 1;
       break;
     }
   }
+
+  printf("Check find room\n");
 
   return json_to_string(*room_to_json(room));
 }

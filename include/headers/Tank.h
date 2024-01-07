@@ -11,9 +11,11 @@
 #include <headers/PhysicEntity.h>
 #include <headers/PhysicManager.h>
 
+#include <socket/Client.hpp>
+
 using namespace QuickSDL;
 
-class Tank : PhysicEntity {
+class Tank : public PhysicEntity {
  private:
   static const int MOVE_SPEED = 100;
 
@@ -23,6 +25,7 @@ class Tank : PhysicEntity {
   InputManager* mInput;
   PhysicManager* mPhysicMgr;
   Graphics* mGraphics;
+  TSS::Client* mClient;
 
   bool mAlive;
   bool mAnimating;
@@ -59,6 +62,11 @@ class Tank : PhysicEntity {
   bool IsAnimating();
 
   void Shoot();
+  void Shoot(Vector2 pos, GameEntity::DIRECTION direction);
+
+  void StopMoving(Vector2 pos, GameEntity::DIRECTION direction);
+  void ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
+                      bool moving = true);
 
   void Update();
   void Render();

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <map>
 #include <nlohmann/json.hpp>
 
 #include "tss-socket.hpp"
@@ -52,15 +53,13 @@ class Client : public SocketClient {
   void shot_bullet(float x, float y, int direction);
   void move_start(float x, float y, int direction);
   void move_stop(float x, float y);
+  void login();
 
   void close_socket();
 
-  std::string get_username() { return username; }
-
-  void login();
-
   // Getter function
   Room *get_current_room();
+  std::string get_username() { return username; }
 
   // Setter function
   void set_current_room(Room *room);
