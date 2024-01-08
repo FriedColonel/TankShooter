@@ -52,6 +52,8 @@ class Client : public SocketClient {
   void create_room(int map);
   // message format: game:join_room:username:room_id
   void join_room(std::string room_id);
+  // message format: game:leave_room:username:room_id
+  void leave_room();
   // message format: game:find_room:room_id
   void get_rooms();
   // message format: game:find_room:room_id

@@ -15,6 +15,12 @@ using json = nlohmann::json;
 using std::to_string;
 
 namespace TSS {
+struct OnlineUser {
+  std::string username;
+  int client_socket;
+  bool is_join_room;
+};
+
 struct User {
   std::string username;
   std::string password;

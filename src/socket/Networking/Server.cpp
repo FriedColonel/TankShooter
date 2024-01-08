@@ -5,6 +5,7 @@ TSS::Server::Server(int domain, int service, int protocol, int port,
     : SocketServer(domain, service, protocol, port, interface, backlog) {
   auth_handler = new AuthHandler();
   game_handler = new GameHandler();
+  online_users = new LinkedList();
 
   // Initialize current set
   FD_ZERO(&current_sockets);
@@ -24,22 +25,20 @@ int TSS::Server::accepter() {
   return client_socket;
 }
 
-void TSS::Server::broadcast_to_room(int client_socket, std::string msg,
-                                    std::string room_id) {
-  Room *room = game_handler->get_room(room_id);
+void TSS::Server::broadcast(std::string msg) {
+  for (int i = 0; i < online_users->length; i++) {
+    OnlineUser *online_user = (OnlineUser *)online_users->retrieve(i);
+    if (online_user->is_join_room) {
+      continue;
+    }
 
-  if (room == NULL) {
-    responder(client_socket, "game:failed:room_not_found");
-    return;
-  }
-
-  for (int i = 0; i < room->players.size(); i++) {
-    responder(room->players[i].client_socket, msg);
+    responder(online_user->client_socket, msg);
   }
 }
 
-void TSS::Server::to_everyone_else_in_room(int client_socket, std::string msg,
-                                           std::string room_id) {
+void TSS::Server::broadcast_to_room(int client_socket, std::string msg,
+                                    std::string room_id,
+                                    bool is_send_to_sender = true) {
   Room *room = game_handler->get_room(room_id);
 
   if (room == NULL) {
@@ -48,9 +47,11 @@ void TSS::Server::to_everyone_else_in_room(int client_socket, std::string msg,
   }
 
   for (int i = 0; i < room->players.size(); i++) {
-    if (room->players[i].client_socket != client_socket) {
-      responder(room->players[i].client_socket, msg);
+    if (!is_send_to_sender && room->players[i].client_socket == client_socket) {
+      continue;
     }
+
+    responder(room->players[i].client_socket, msg);
   }
 }
 
@@ -119,6 +120,8 @@ void TSS::Server::handle_auth(int client_socket) {
     std::string response_msg;
 
     if (result == 1) {
+      add_online_user(std::string(username), client_socket);
+
       response_msg = "auth:login:success";
     } else if (result == 0) {
       response_msg = "Error: Password is incorrect";
@@ -141,6 +144,7 @@ void TSS::Server::handle_auth(int client_socket) {
     std::string response_msg;
 
     if (result == 1) {
+      add_online_user(std::string(username), client_socket);
       response_msg = "auth:register:success";
     } else if (result == 0) {
       response_msg = "Error: Username already in use";
@@ -153,6 +157,8 @@ void TSS::Server::handle_auth(int client_socket) {
 
   if (strcmp(action, "logout") == 0) {
     char *username = strtok(NULL, ":");
+
+    remove_online_user(std::string(username));
 
     auth_handler->logout(std::string(username));
 
@@ -172,7 +178,12 @@ void TSS::Server::handle_game(int client_socket) {
     std::string room =
         game_handler->create_room(username, atoi(map), client_socket);
 
+    update_online_user(std::string(username), true);
+
     std::string response_msg = "game:create_room:success\n" + room;
+
+    // Broadcast to all clients that a new room has been created
+    broadcast("game:get_rooms:success\n" + game_handler->get_rooms_list());
 
     responder(client_socket, response_msg);
   }
@@ -184,6 +195,8 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result = make_response(
         "game:join_room",
         game_handler->join_room(username, room_id, client_socket));
+
+    update_online_user(std::string(username), true);
 
     broadcast_to_room(client_socket, result, std::string(room_id));
   }
@@ -211,7 +224,9 @@ void TSS::Server::handle_game(int client_socket) {
     std::string result = make_response(
         "game:leave_room", game_handler->leave_room(username, room_id));
 
-    to_everyone_else_in_room(client_socket, result, std::string(room_id));
+    update_online_user(std::string(username), false);
+
+    broadcast_to_room(client_socket, result, std::string(room_id), false);
   }
 
   if (strcmp(action, "ready") == 0) {
@@ -254,7 +269,7 @@ void TSS::Server::handle_game(int client_socket) {
                          std::string(pos_x) + ":" + std::string(pos_y) + ":" +
                          std::string(direction);
 
-    to_everyone_else_in_room(client_socket, result, std::string(room_id));
+    broadcast_to_room(client_socket, result, std::string(room_id), false);
   }
 
   if (strcmp(action, "move") == 0) {
@@ -276,7 +291,7 @@ void TSS::Server::handle_game(int client_socket) {
       result = "game:move:stop\n" + result;
     }
 
-    to_everyone_else_in_room(client_socket, result, std::string(room_id));
+    broadcast_to_room(client_socket, result, std::string(room_id), false);
   }
 }
 
@@ -287,4 +302,32 @@ std::string TSS::Server::make_response(std::string event_name,
   }
 
   return event_name + ":success\n" + data;
+}
+
+void TSS::Server::add_online_user(std::string username, int client_socket) {
+  OnlineUser *new_online_user = new OnlineUser();
+  new_online_user->username = std::string(username);
+  new_online_user->client_socket = client_socket;
+  new_online_user->is_join_room = false;
+  online_users->insert(0, new_online_user, sizeof(struct OnlineUser));
+}
+
+void TSS::Server::remove_online_user(std::string username) {
+  for (int i = 0; i < online_users->length; i++) {
+    OnlineUser *online_user = (OnlineUser *)online_users->retrieve(i);
+    if (online_user->username == username) {
+      online_users->remove(i);
+      break;
+    }
+  }
+}
+
+void TSS::Server::update_online_user(std::string username, bool is_join_room) {
+  for (int i = 0; i < online_users->length; i++) {
+    OnlineUser *online_user = (OnlineUser *)online_users->retrieve(i);
+    if (online_user->username == username) {
+      online_user->is_join_room = is_join_room;
+      break;
+    }
+  }
 }

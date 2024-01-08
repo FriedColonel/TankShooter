@@ -92,6 +92,17 @@ void TSS::Client::join_room(std::string room_id) {
   sender(send_message);
 }
 
+void TSS::Client::leave_room() {
+  if (currentRoom == NULL) return;
+
+  std::string send_message =
+      "game:leave_room:" + username + ":" + currentRoom->room_id;
+
+  this->currentRoom = NULL;
+
+  sender(send_message);
+}
+
 void TSS::Client::get_rooms() {
   char send_message[256] = "game:get_rooms";
 
@@ -249,8 +260,6 @@ bool TSS::Client::register_user(char *username, char *password) {
     this->username = std::string(username);
     return true;
   }
-
-  std::cout << recv_msg << std::endl;
 
   return false;
 }
