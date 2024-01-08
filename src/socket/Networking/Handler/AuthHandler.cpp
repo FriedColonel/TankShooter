@@ -34,6 +34,8 @@ void TSS::AuthHandler::update_auth_status(std::string founed_username,
 
   std::string saved_users;
 
+  std::cout << "Update auth status: " << users->length << std::endl;
+
   // Save users to file
   while (users->length > 0) {
     struct User *remove_user = (struct User *)users->retrieve(0);
@@ -53,8 +55,6 @@ void TSS::AuthHandler::update_auth_status(std::string founed_username,
                   saved_users.length());
 }
 
-// return
-// -1: User not found, 1: User found, 0: Password incorrect, 2: User is login
 int TSS::AuthHandler::check_user(std::string username, std::string password) {
   std::lock_guard<std::mutex> lock(user_mutex);
   load_users();
@@ -67,7 +67,7 @@ int TSS::AuthHandler::check_user(std::string username, std::string password) {
       return 2;
     }
 
-    if (found_user->password == password) {
+    if (xor_decrypt(found_user->password, SECRET_KEY) == password) {
       update_auth_status(found_user->username, true);
       return 1;
     } else {
@@ -76,6 +76,37 @@ int TSS::AuthHandler::check_user(std::string username, std::string password) {
   }
 
   return -1;
+}
+
+int TSS::AuthHandler::register_user(std::string username,
+                                    std::string password) {
+  std::lock_guard<std::mutex> lock(user_mutex);
+  load_users();
+
+  User *found_user =
+      static_cast<User *>(users->search((char *)username.c_str(), compare));
+
+  if (found_user != NULL) {
+    return 0;
+  }
+
+  User *new_user = new User();
+  new_user->username = username;
+  new_user->password = password;
+  new_user->is_login = true;
+
+  users->insert(0, new_user, sizeof(struct User));
+
+  // Login after register & save users to file
+  std::string saved_new_users = std::string(new_user->username) + " " +
+                                xor_encrypt(password, SECRET_KEY) + " 1\n";
+
+  std::cout << "Register user: " << saved_new_users << std::endl;
+
+  TSS::append_file(saved_account_path, (void *)saved_new_users.c_str(),
+                   saved_new_users.length());
+
+  return 1;
 }
 
 void TSS::AuthHandler::logout(std::string username) {

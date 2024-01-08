@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
   ThreadPool *thread_pool = new ThreadPool(1);
   thread_pool->add_work(thread_job);
 
-  client->login();
+  // client->login();
+  client->auth_menu();
 
   client->create_room(1);
 

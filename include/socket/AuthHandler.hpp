@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "File.hpp"
+#include "Helper.hpp"
 #include "tss-data-structure.hpp"
+
+#define SECRET_KEY "SECRETPASSWORD"
 
 namespace TSS {
 class AuthHandler {
@@ -23,7 +26,12 @@ class AuthHandler {
 
  public:
   AuthHandler();
+  // return
+  // -1: User not found, 1: User found, 0: Password incorrect, 2: User is login
   int check_user(std::string username, std::string password);
+  // return
+  // 0: Username already in use, 1: Register success
+  int register_user(std::string username, std::string password);
   void logout(std::string username);
 };
 }  // namespace TSS

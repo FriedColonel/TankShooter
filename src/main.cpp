@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]) {
   }
 
   TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
-  client->login();
+  client->auth_menu();
 
   QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();
   thread recv_thread(auto_recv_message);

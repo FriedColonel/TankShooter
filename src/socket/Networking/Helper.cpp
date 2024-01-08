@@ -55,7 +55,45 @@ std::string TSS::get_password() {
       printf("*");
     }
   }
+  printf("\n");
   password[i] = '\0';
 
   return std::string(password);
+}
+
+std::string TSS::xor_encrypt(std::string data, const char *key) {
+  for (size_t i = 0; i < data.length(); i++) {
+    data[i] = data[i] ^ key[i % strlen(key)];
+  }
+
+  // Convert to hex string
+  std::stringstream ss;
+  for (size_t i = 0; i < data.length(); i++) {
+    ss << std::hex << std::setw(2) << std::setfill('0')
+       << static_cast<int>(static_cast<unsigned char>(data[i]));
+  }
+
+  return ss.str();
+}
+
+std::string TSS::xor_decrypt(std::string message, const char *key) {
+  std::string encrypted = hex_to_string(message);
+  for (int i = 0; i < encrypted.length(); i++) {
+    encrypted[i] ^= key[i % strlen(key)];
+  }
+
+  std::cout << "Decrypted: " << encrypted << std::endl;
+
+  return encrypted;
+}
+
+std::string TSS::hex_to_string(std::string input) {
+  std::string output;
+  output.reserve(input.length() / 2);
+  for (size_t i = 0; i < input.length(); i += 2) {
+    std::string byte = input.substr(i, 2);
+    char chr = static_cast<char>(std::stoi(byte, nullptr, 16));
+    output.push_back(chr);
+  }
+  return output;
 }

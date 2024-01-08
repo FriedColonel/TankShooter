@@ -68,23 +68,6 @@ std::string TSS::Client::receiver() {
 void TSS::Client::close_socket() { close(get_sock()); }
 
 // Event handler
-bool TSS::Client::login(char *userName, char *password) {
-  std::string send_msg =
-      "auth:login:" + std::string(userName) + ":" + std::string(password);
-
-  sender(send_msg);
-
-  std::string recv_msg = receiver();
-
-  if (recv_msg == "auth:login:success") {
-    this->username = std::string(userName);
-    return true;
-  }
-
-  std::cout << recv_msg << std::endl;
-
-  return false;
-}
 
 void TSS::Client::logout() {
   if (username == "") return;
@@ -179,19 +162,101 @@ void TSS::Client::login() {
     std::cout << "Password: ";
     strcpy(password, get_password().c_str());
   } while (!login(username, password));
-
-  std::cout << "\nLogin success" << std::endl;
 }
 
-// void TSS::Client::set_player(Player *player, std::string usrName) {
-//   players[usrName] = player;
-// }
+void TSS::Client::register_user() {
+  char username[256];
+  char password[256];
+  char confirm_password[256];
+
+  do {
+    std::cout << "Username: ";
+    std::cin.clear();
+    std::cin.getline(username, 256);
+
+    do {
+      std::cout << "Password: ";
+      strcpy(password, get_password().c_str());
+
+      std::cout << "Confirm password: ";
+      strcpy(confirm_password, get_password().c_str());
+
+      if (strcmp(password, confirm_password) != 0)
+        std::cout << "Password and confirm password not match" << std::endl;
+    } while (strcmp(password, confirm_password) != 0);
+  } while (!register_user(username, password));
+}
+
+void TSS::Client::auth_menu() {
+  menu auth_menu;
+  int choice;
+  auth_menu.menu_head("Tank Shooter");
+  auth_menu.add("Login", 1, "Login to your account");
+  auth_menu.add("Register", 2, "Create a new account");
+  auth_menu.add("Exit", 3, "Exit the game");
+
+  while (true) {
+    choice = auth_menu.display();
+    switch (choice) {
+      case 1:
+        login();
+        return;
+        break;
+      case 2:
+        register_user();
+        return;
+        break;
+      case 3:
+        delete this;
+        exit(0);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// Private function
+bool TSS::Client::login(char *userName, char *password) {
+  std::string send_msg =
+      "auth:login:" + std::string(userName) + ":" + std::string(password);
+
+  sender(send_msg);
+
+  std::string recv_msg = receiver();
+
+  if (recv_msg == "auth:login:success") {
+    std::cout << "Login successfully! Enjoy game..." << std::endl;
+    this->username = std::string(userName);
+    return true;
+  }
+
+  std::cout << recv_msg << std::endl;
+
+  return false;
+}
+
+bool TSS::Client::register_user(char *username, char *password) {
+  std::string send_msg =
+      "auth:register:" + std::string(username) + ":" + std::string(password);
+
+  sender(send_msg);
+
+  std::string recv_msg = receiver();
+
+  if (recv_msg == "auth:register:success") {
+    std::cout << "Register successfully! Enjoy game..." << std::endl;
+    this->username = std::string(username);
+    return true;
+  }
+
+  std::cout << recv_msg << std::endl;
+
+  return false;
+}
 
 // Getter function
 TSS::Room *TSS::Client::get_current_room() { return currentRoom; }
-// Player *TSS::Client::get_player(std::string username) {
-//   return players[username];
-// }
 
 // Setter function
 void TSS::Client::set_current_room(Room *room) { currentRoom = room; }

@@ -1,6 +1,7 @@
 #ifndef Client_hpp
 #define Client_hpp
 
+// #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,6 +9,8 @@
 #include <map>
 #include <nlohmann/json.hpp>
 
+#include "Helper.hpp"
+#include "Mmaker.hpp"
 #include "tss-socket.hpp"
 
 using json = nlohmann::json;
@@ -18,17 +21,16 @@ class Client : public SocketClient {
  private:
   static Client *sInstance;
 
+  std::string username;
   char buffer[256] = {0};
+  Room *currentRoom;
 
   void handler();
   void responder();
 
-  std::string username;
-
-  Room *currentRoom;
-
  private:
   bool login(char *username, char *password);
+  bool register_user(char *username, char *password);
 
  public:
   LinkedList *rooms;
@@ -43,6 +45,7 @@ class Client : public SocketClient {
 
   void sender(std::string msg);
   std::string receiver();
+  void auth_menu();
 
   // Event handler
   // message format: game:create_room:username:map
@@ -72,6 +75,7 @@ class Client : public SocketClient {
 
   // Auth handler function
   void login();
+  void register_user();
   void logout();
 
   // Getter function

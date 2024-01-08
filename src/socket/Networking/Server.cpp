@@ -121,11 +121,31 @@ void TSS::Server::handle_auth(int client_socket) {
     if (result == 1) {
       response_msg = "auth:login:success";
     } else if (result == 0) {
-      response_msg = "auth:login:password_incorrect";
+      response_msg = "Error: Password is incorrect";
     } else if (result == 2) {
-      response_msg = "auth:login:already_login";
+      response_msg = "Error: User is already logged in";
     } else {
-      response_msg = "auth:login:user_not_found";
+      response_msg = "Error: User not found";
+    }
+
+    responder(client_socket, response_msg);
+  }
+
+  if (strcmp(action, "register") == 0) {
+    char *username = strtok(NULL, ":");
+    char *password = strtok(NULL, ":");
+
+    int result = auth_handler->register_user(std::string(username),
+                                             std::string(password));
+
+    std::string response_msg;
+
+    if (result == 1) {
+      response_msg = "auth:register:success";
+    } else if (result == 0) {
+      response_msg = "Error: Username already in use";
+    } else {
+      response_msg = "Error: Unknown error";
     }
 
     responder(client_socket, response_msg);
