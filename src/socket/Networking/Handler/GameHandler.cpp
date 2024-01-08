@@ -69,6 +69,19 @@ std::string TSS::GameHandler::leave_room(std::string username,
     }
   }
 
+  // remove room if no player in room
+  if (room->players.size() == 0) {
+    for (int i = 0; i < rooms->length; i++) {
+      Room *r = static_cast<Room *>(rooms->retrieve(i));
+      if (r->room_id == room_id) {
+        rooms->remove(i);
+        break;
+      }
+    }
+
+    return "room_empty";
+  }
+
   return json_to_string(*room_to_json(room));
 }
 

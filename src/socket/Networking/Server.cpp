@@ -221,10 +221,16 @@ void TSS::Server::handle_game(int client_socket) {
     char *username = strtok(NULL, ":");
     char *room_id = strtok(NULL, ":");
 
-    std::string result = make_response(
-        "game:leave_room", game_handler->leave_room(username, room_id));
+    std::string result = game_handler->leave_room(username, room_id);
 
-    update_online_user(std::string(username), false);
+    if (result != "") update_online_user(std::string(username), false);
+
+    if (result == "room_empty") {
+      broadcast("game:get_rooms:success\n" + game_handler->get_rooms_list());
+      return;
+    }
+
+    std::string response_msg = make_response("game:leave_room", result);
 
     broadcast_to_room(client_socket, result, std::string(room_id), false);
   }
