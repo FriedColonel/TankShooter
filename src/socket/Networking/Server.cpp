@@ -318,14 +318,15 @@ void TSS::Server::handle_game(int client_socket) {
     broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
-  if (strcmp(action, "player_die") == 0) {
+  if (strcmp(action, "player_dead") == 0) {
     char *room_id = strtok(NULL, ":");
     char *username = strtok(NULL, ":");
 
     std::string result = make_response(
-        "game:player_die", game_handler->player_die(username, room_id));
+        "game:player_dead", game_handler->player_dead(username, room_id));
 
-    broadcast_to_room(client_socket, result, std::string(room_id), false);
+    broadcast_to_room(client_socket, result + "\n" + std::string(username),
+                      std::string(room_id), false);
   }
 }
 

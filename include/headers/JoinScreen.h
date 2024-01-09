@@ -67,6 +67,7 @@ class JoinScreen : public GameEntity {
 
  public:
   static JoinScreen* Instance();
+  static void Release();
   JoinScreen();
   ~JoinScreen();
 

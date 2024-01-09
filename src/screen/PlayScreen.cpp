@@ -9,10 +9,22 @@ PlayScreen* PlayScreen::Instance() {
   return sInstance;
 }
 
+void PlayScreen::Release() {
+  delete sInstance;
+  sInstance = NULL;
+}
+
 PlayScreen::PlayScreen() {
   mTimer = Timer::Instance();
   mClient = TSS::Client::Instance();
   mGameMap = GameMap::Instance();
+
+  mGameOver = false;
+
+  mGameOverText = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  // set position of mGameOverText to bottom center of the screen
+  mGameOverText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                             Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
 
   for (int i = 0; i < 4; i++) {
     mPlayer[i] = NULL;
@@ -64,6 +76,10 @@ void PlayScreen::Shoot(std::string username, Vector2 pos,
   mPlayers[username]->Shoot(pos, dir);
 }
 
+void PlayScreen::PlayerDead(std::string username) {
+  mPlayers[username]->Dead();
+}
+
 void PlayScreen::Update() {
   mGameMap->Update();
 
@@ -71,6 +87,27 @@ void PlayScreen::Update() {
     if (mPlayer[i] != NULL) {
       mPlayer[i]->Update();
     }
+  }
+
+  int alive = 0;
+
+  for (int i = 0; i < 4; i++) {
+    if (mPlayer[i] != NULL) {
+      if (mPlayer[i]->IsThisPlayer() && !mPlayer[i]->Alive()) {
+        mGameOver = true;
+        break;
+      }
+
+      if (mPlayer[i]->Alive()) alive++;
+    }
+  }
+
+  if (alive == 1) mGameOver = true;
+
+  if (mGameOver && mGameOverText->Pos(world).y >
+                       Graphics::Instance()->SCREEN_HEIGHT * 0.5f) {
+    // game over text scrolling up from bottom of the screen
+    mGameOverText->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
   }
 }
 
@@ -81,5 +118,9 @@ void PlayScreen::Render() {
     if (mPlayer[i] != NULL) {
       mPlayer[i]->Render();
     }
+  }
+
+  if (mGameOver) {
+    mGameOverText->Render();
   }
 }

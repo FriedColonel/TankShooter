@@ -11,6 +11,11 @@ JoinScreen* JoinScreen::Instance() {
   return sInstance;
 }
 
+void JoinScreen::Release() {
+  delete sInstance;
+  sInstance = NULL;
+}
+
 JoinScreen::JoinScreen() {
   mInput = InputManager::Instance();
   mClient = TSS::Client::Instance();

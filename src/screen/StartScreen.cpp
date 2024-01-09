@@ -9,6 +9,11 @@ StartScreen* StartScreen::Instance() {
   return sInstance;
 }
 
+void StartScreen::Release() {
+  delete sInstance;
+  sInstance = NULL;
+}
+
 StartScreen::StartScreen() {
   mTimer = Timer::Instance();
   mInput = InputManager::Instance();

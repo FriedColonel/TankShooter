@@ -32,11 +32,20 @@ ScreenManager::ScreenManager() {
 ScreenManager::~ScreenManager() {
   mInput = NULL;
 
-  delete mStartScreen;
+  StartScreen::Release();
   mStartScreen = NULL;
 
-  delete mJoinScreen;
+  JoinScreen::Release();
   mJoinScreen = NULL;
+
+  PlayScreen::Release();
+  mPlayScreen = NULL;
+
+  LobbyScreen::Release();
+  mLobbyScreen = NULL;
+
+  MapChooseScreen::Release();
+  mMapChooseScreen = NULL;
 }
 
 void ScreenManager::Update() {

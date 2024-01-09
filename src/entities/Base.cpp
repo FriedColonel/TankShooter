@@ -6,6 +6,7 @@ Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
   mTimer = Timer::Instance();
   mGraphics = Graphics::Instance();
   mPhysicMgr = PhysicManager::Instance();
+  mClient = TSS::Client::Instance();
 
   mAnimating = false;
   mIsThisPlayer = isThisPlayer;
@@ -88,6 +89,7 @@ Base::~Base() {
   mTimer = NULL;
   mGraphics = NULL;
   mPhysicMgr = NULL;
+  mClient = NULL;
 
   delete mTexture;
   mTexture = NULL;
@@ -127,13 +129,18 @@ bool Base::WasHit() { return mAnimating; }
 
 void Base::Hit(PhysicEntity* other) {
   if (instanceof <Bullet>(other)) {
-    mAnimating = true;
-    Active(false);
-    mTank->Dead();
+    Dead();
+  }
+}
 
-    for (int i = 0; i < 3; i++) {
-      mWalls[i]->Dead();
-    }
+void Base::Dead() {
+  mAnimating = true;
+  Active(false);
+  mTank->Dead();
+  if (mIsThisPlayer) mClient->player_dead();
+
+  for (int i = 0; i < 3; i++) {
+    mWalls[i]->Dead();
   }
 }
 

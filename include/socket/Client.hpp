@@ -65,6 +65,12 @@ class Client : public SocketClient {
   void unready();
   // message format: game:start:username:room_id
   void start_game();
+  // message format: game:pause:room_id
+  void pause_game();
+  // message format: game:resume:room_id
+  void resume_game();
+  // message format: game:player_dead:room_id
+  void player_dead();
 
   // message format: game:shoot:room_id:username:pos_x:pos_y:direction
   void shot_bullet(float x, float y, int direction);

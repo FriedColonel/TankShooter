@@ -20,6 +20,9 @@ Player::Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color) {
 Player::~Player() {
   mTimer = NULL;
   mInput = NULL;
+
+  delete mBase;
+  mBase = NULL;
 }
 
 void Player::Alive(bool alive) { mAlive = alive; }
@@ -34,6 +37,10 @@ void Player::ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
 void Player::Shoot(Vector2 pos, GameEntity::DIRECTION direction) {
   mBase->mTank->Shoot(pos, direction);
 }
+
+void Player::Dead() { mBase->Dead(); }
+
+bool Player::IsThisPlayer() { return mThisPlayer; }
 
 void Player::Update() {
   if (mBase->WasHit()) {

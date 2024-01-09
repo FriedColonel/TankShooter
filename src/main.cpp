@@ -33,6 +33,8 @@ int main(int argc, char const *argv[]) {
   TSS::Client::Release();
   client = NULL;
 
+  printf("Client destroyed\n");
+
   return 0;
 }
 
@@ -81,10 +83,9 @@ void *auto_recv_message() {
         event_name == "game:unready:success" ||
         event_name == "game:start:success" ||
         event_name ==
-            "game:leave_room:success" ||         // found other user leave room
-        event_name == "game:pause:success" ||    // found leader pause game
-        event_name == "game:resume:success" ||   // found leader resume game
-        event_name == "game:player_die:success"  // found other user die
+            "game:leave_room:success" ||       // found other user leave room
+        event_name == "game:pause:success" ||  // found leader pause game
+        event_name == "game:resume:success"    // found leader resume game
     ) {
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
@@ -158,6 +159,20 @@ void *auto_recv_message() {
     if (event_name == "auth:logout:success") {
       cout << "Logout success" << endl;
       break;
+    }
+
+    if (event_name == "game:player_dead:success") {
+      string dead_user;
+
+      getline(iss, dead_user, '\n');
+
+      Room *room = json_to_room(string_to_json(data));
+      client->set_current_room(room);
+
+      PlayScreen *playScreen = PlayScreen::Instance();
+      playScreen->PlayerDead(dead_user);
+
+      printf("Player dead: %s\n", dead_user.c_str());
     }
   }
 

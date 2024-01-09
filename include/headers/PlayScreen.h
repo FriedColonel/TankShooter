@@ -22,8 +22,12 @@ class PlayScreen : public GameEntity {
 
   GameMap* mGameMap;
 
+  bool mGameOver;
+  Texture* mGameOverText;
+
  public:
   static PlayScreen* Instance();
+  static void Release();
   void Update();
   void Render();
 
@@ -32,8 +36,9 @@ class PlayScreen : public GameEntity {
   void SetPlayerPosition(std::string username, Vector2 pos, bool moving,
                          GameEntity::DIRECTION dir);
   void Shoot(std::string username, Vector2 pos, GameEntity::DIRECTION dir);
+  void PlayerDead(std::string username);
 
- public:
+ private:
   PlayScreen();
   ~PlayScreen();
 };

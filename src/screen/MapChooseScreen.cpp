@@ -9,6 +9,11 @@ MapChooseScreen* MapChooseScreen::Instance() {
   return sInstance;
 }
 
+void MapChooseScreen::Release() {
+  delete sInstance;
+  sInstance = NULL;
+}
+
 MapChooseScreen::MapChooseScreen() {
   mInput = InputManager::Instance();
 

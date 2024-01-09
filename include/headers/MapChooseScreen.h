@@ -32,6 +32,7 @@ class MapChooseScreen : public GameEntity {
 
  public:
   static MapChooseScreen* Instance();
+  static void Release();
   MapChooseScreen();
   ~MapChooseScreen();
 

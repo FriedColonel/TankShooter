@@ -9,6 +9,11 @@ LobbyScreen* LobbyScreen::Instance() {
   return sInstance;
 }
 
+void LobbyScreen::Release() {
+  delete sInstance;
+  sInstance = NULL;
+}
+
 LobbyScreen::LobbyScreen() {
   Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f, 0.0f));
   mInput = InputManager::Instance();

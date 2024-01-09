@@ -109,6 +109,7 @@ class LobbyScreen : public GameEntity {
 
  public:
   static LobbyScreen* Instance();
+  static void Release();
   void Update();
   void Render();
 

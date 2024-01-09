@@ -9,6 +9,8 @@
 #include <headers/PhysicManager.h>
 #include <headers/Tank.h>
 
+#include <socket/Client.hpp>
+
 using namespace QuickSDL;
 
 class Base : public PhysicEntity {
@@ -16,6 +18,7 @@ class Base : public PhysicEntity {
   Graphics* mGraphics;
   Timer* mTimer;
   PhysicManager* mPhysicMgr;
+  TSS::Client* mClient;
 
   bool mAnimating;
   bool mIsThisPlayer;
@@ -50,6 +53,7 @@ class Base : public PhysicEntity {
                       bool moving);
 
   void Hit(PhysicEntity* other) override;
+  void Dead();
 
   void Update();
   void Render();

@@ -34,6 +34,8 @@ class StartScreen : public GameEntity {
 
  public:
   static StartScreen* Instance();
+  static void Release();
+
   StartScreen();
   ~StartScreen();
 

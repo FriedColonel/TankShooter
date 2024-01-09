@@ -185,8 +185,8 @@ std::string TSS::GameHandler::resume_game(std::string room_id) {
   return json_to_string(*room_to_json(room));
 }
 
-std::string TSS::GameHandler::player_die(std::string username,
-                                         std::string room_id) {
+std::string TSS::GameHandler::player_dead(std::string username,
+                                          std::string room_id) {
   std::lock_guard<std::mutex> lock(room_mutex);
   Room *room = get_room(room_id);
   if (room == NULL) {

@@ -31,6 +31,9 @@ class Player : public GameEntity {
   void ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
                       bool moving = true);
   void Shoot(Vector2 pos, GameEntity::DIRECTION direction);
+  void Dead();
+
+  bool IsThisPlayer();
 
   void Update();
   void Render();

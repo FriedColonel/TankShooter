@@ -36,7 +36,7 @@ class GameHandler {
   std::string start_game(std::string room_id);
   std::string pause_game(std::string room_id);
   std::string resume_game(std::string room_id);
-  std::string player_die(std::string username, std::string room_id);
+  std::string player_dead(std::string username, std::string room_id);
 
   // getters function
   std::string get_rooms_list();
