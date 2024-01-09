@@ -62,26 +62,6 @@ void *auto_recv_message() {
     getline(iss, event_name, '\n');
     getline(iss, data, '\n');
 
-    if (event_name == "game:join_room:success") {
-      cout << endl << "Join room success " << data << endl;
-      Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(room);
-
-      cout << "Current room: " << client->get_current_room()->room_id << endl;
-
-      continue;
-    }
-
-    if (event_name == "game:create_room:success") {
-      cout << endl << "Create room success " << data << endl;
-      Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(room);
-
-      cout << "Current room: " << client->get_current_room()->room_id << endl;
-
-      continue;
-    }
-
     if (event_name == "game:get_rooms:success") {
       cout << endl << "Rooms data" << data << endl;
 
@@ -95,49 +75,22 @@ void *auto_recv_message() {
       continue;
     }
 
-    if (event_name == "game:find_room:success") {
-      Room *room = json_to_room(string_to_json(data));
-
-      cout << "founed room: " << room->room_id << endl;
-
-      continue;
-    }
-
-    // found other user leave room
-    if (event_name == "game:leave_room:success") {
+    if (event_name == "game:create_room:success" ||
+        event_name == "game:join_room:success" ||
+        event_name == "game:ready:success" ||
+        event_name == "game:unready:success" ||
+        event_name == "game:start:success" ||
+        event_name ==
+            "game:leave_room:success" ||          // found other user leave room
+        event_name == "game:pause:success" ||     // found leader pause game
+        event_name == "game:resume:success" ||    // found leader resume game
+        event_name == "game:player_dead:success"  // found other player die
+    ) {
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
 
-      cout << "Other user outed: " << client->get_current_room()->room_id
+      cout << "Update room status: " << client->get_current_room()->room_id
            << endl;
-
-      continue;
-    }
-
-    if (event_name == "game:ready:success") {
-      Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(room);
-
-      cout << "Ready success: " << client->get_current_room()->room_id << endl;
-
-      continue;
-    }
-
-    if (event_name == "game:unready:success") {
-      Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(room);
-
-      cout << "Unready success: " << client->get_current_room()->room_id
-           << endl;
-
-      continue;
-    }
-
-    if (event_name == "game:start:success") {
-      Room *room = json_to_room(string_to_json(data));
-      client->set_current_room(room);
-
-      cout << "Start success: " << client->get_current_room()->room_id << endl;
 
       continue;
     }

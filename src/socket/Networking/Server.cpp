@@ -299,6 +299,34 @@ void TSS::Server::handle_game(int client_socket) {
 
     broadcast_to_room(client_socket, result, std::string(room_id), false);
   }
+
+  if (strcmp(action, "pause") == 0) {
+    char *room_id = strtok(NULL, ":");
+
+    std::string result =
+        make_response("game:pause", game_handler->pause_game(room_id));
+
+    broadcast_to_room(client_socket, result, std::string(room_id));
+  }
+
+  if (strcmp(action, "resume") == 0) {
+    char *room_id = strtok(NULL, ":");
+
+    std::string result =
+        make_response("game:resume", game_handler->resume_game(room_id));
+
+    broadcast_to_room(client_socket, result, std::string(room_id));
+  }
+
+  if (strcmp(action, "player_dead") == 0) {
+    char *room_id = strtok(NULL, ":");
+    char *username = strtok(NULL, ":");
+
+    std::string result = make_response(
+        "game:player_die", game_handler->player_dead(username, room_id));
+
+    broadcast_to_room(client_socket, result, std::string(room_id), false);
+  }
 }
 
 std::string TSS::Server::make_response(std::string event_name,

@@ -32,7 +32,7 @@ struct Player {
   std::string username;
   int tank;  // 1: red, 2: blue, 3:green, 4:white
   bool is_leader;
-  int status;  // 0: not ready, 1: ready, 2: out
+  int status;  // 0: not ready, 1: ready, 2: out, 3: die
   int points;
 };
 

@@ -160,3 +160,45 @@ TSS::Room *TSS::GameHandler::get_room(std::string room_id) {
 
   return room;
 }
+
+std::string TSS::GameHandler::pause_game(std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
+  if (room == NULL) {
+    return "";
+  }
+
+  room->status = 3;
+
+  return json_to_string(*room_to_json(room));
+}
+
+std::string TSS::GameHandler::resume_game(std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
+  if (room == NULL) {
+    return "";
+  }
+
+  room->status = 2;
+
+  return json_to_string(*room_to_json(room));
+}
+
+std::string TSS::GameHandler::player_dead(std::string username,
+                                          std::string room_id) {
+  std::lock_guard<std::mutex> lock(room_mutex);
+  Room *room = get_room(room_id);
+  if (room == NULL) {
+    return "";
+  }
+
+  for (int i = 0; i < room->players.size(); i++) {
+    if (room->players[i].username == username) {
+      room->players[i].status = 3;
+      break;
+    }
+  }
+
+  return json_to_string(*room_to_json(room));
+}

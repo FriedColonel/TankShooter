@@ -163,6 +163,25 @@ void TSS::Client::move_stop(float x, float y) {
   sender(send_message);
 }
 
+void TSS::Client::pause_game() {
+  std::string send_message = "game:pause:" + currentRoom->room_id;
+
+  sender(send_message);
+}
+
+void TSS::Client::resume_game() {
+  std::string send_message = "game:resume:" + currentRoom->room_id;
+
+  sender(send_message);
+}
+
+void TSS::Client::player_dead() {
+  std::string send_message =
+      "game:player_dead:" + currentRoom->room_id + ":" + username;
+
+  sender(send_message);
+}
+
 void TSS::Client::login() {
   char username[256];
   char password[256];
