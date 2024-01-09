@@ -78,7 +78,18 @@ void ScreenManager::Update() {
         mCurrentScreen = start;
         mClient->leave_room();
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
-        mClient->start_game();
+        // check if this player is leader
+        if (mClient->get_current_room()) {
+          for (int i = 0; i < mClient->get_current_room()->players.size();
+               i++) {
+            if (mClient->get_current_room()->players[i].status != 1) break;
+
+            if (mClient->get_current_room()->players[i].username ==
+                    mClient->get_username() &&
+                mClient->get_current_room()->players[i].is_leader)
+              mClient->start_game();
+          }
+        }
       }
 
       if (mClient->get_current_room()) {

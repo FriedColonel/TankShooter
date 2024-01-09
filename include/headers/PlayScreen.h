@@ -23,7 +23,8 @@ class PlayScreen : public GameEntity {
   GameMap* mGameMap;
 
   bool mGameOver;
-  Texture* mGameOverText;
+  Texture* mGameOverText1;
+  Texture* mGameOverText2;
 
  public:
   static PlayScreen* Instance();

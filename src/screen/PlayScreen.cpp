@@ -21,10 +21,15 @@ PlayScreen::PlayScreen() {
 
   mGameOver = false;
 
-  mGameOverText = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
-  // set position of mGameOverText to bottom center of the screen
-  mGameOverText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
-                             Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
+  mGameOverText1 = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  // set position of mGameOverText1 to bottom center of the screen
+  mGameOverText1->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                              Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
+
+  mGameOverText2 = new Texture("PRESS ENTER TO CONTINUE", "Font/ARCADE.TTF", 32,
+                               {150, 0, 0});
+  mGameOverText2->Parent(mGameOverText1);
+  mGameOverText2->Pos(Vector2(0.0f, 40.0f));
 
   for (int i = 0; i < 4; i++) {
     mPlayer[i] = NULL;
@@ -39,10 +44,19 @@ PlayScreen::~PlayScreen() {
 
   mClient = NULL;
 
-  for (int i = 0; i < 4; i++) {
-    delete mPlayer[i];
-    mPlayer[i] = NULL;
+  for (map<string, Player*>::iterator it = mPlayers.begin();
+       it != mPlayers.end(); it++) {
+    delete it->second;
+    it->second = NULL;
   }
+
+  mPlayers.clear();
+
+  delete mGameOverText1;
+  mGameOverText1 = NULL;
+
+  delete mGameOverText2;
+  mGameOverText2 = NULL;
 }
 
 void PlayScreen::StartNewGame() {
@@ -104,10 +118,10 @@ void PlayScreen::Update() {
 
   if (alive == 1) mGameOver = true;
 
-  if (mGameOver && mGameOverText->Pos(world).y >
+  if (mGameOver && mGameOverText1->Pos(world).y >
                        Graphics::Instance()->SCREEN_HEIGHT * 0.5f) {
     // game over text scrolling up from bottom of the screen
-    mGameOverText->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
+    mGameOverText1->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
   }
 }
 
@@ -121,6 +135,7 @@ void PlayScreen::Render() {
   }
 
   if (mGameOver) {
-    mGameOverText->Render();
+    mGameOverText1->Render();
+    mGameOverText2->Render();
   }
 }
