@@ -75,6 +75,8 @@ void TSS::Client::logout() {
   std::string send_message = "auth:logout:" + username;
 
   sender(send_message);
+
+  leave_room();
 }
 
 void TSS::Client::create_room(int map) {

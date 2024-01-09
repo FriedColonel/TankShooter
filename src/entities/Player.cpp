@@ -24,6 +24,8 @@ Player::~Player() {
 
 void Player::Alive(bool alive) { mAlive = alive; }
 
+bool Player::Alive() { return mAlive; }
+
 void Player::ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
                             bool moving) {
   mBase->mTank->ChangePosition(pos, direction, moving);

@@ -47,6 +47,7 @@ void ScreenManager::Update() {
         if (mStartScreen->SelectedMode() == mapChoose) {
           mCurrentScreen = mapChoose;
         } else if (mStartScreen->SelectedMode() == join) {
+          mJoinScreen->UpdateRoomList();
           mCurrentScreen = join;
         }
       }
@@ -66,6 +67,7 @@ void ScreenManager::Update() {
       mLobbyScreen->Update();
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
+        mClient->leave_room();
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
         mClient->start_game();
       }
@@ -83,9 +85,10 @@ void ScreenManager::Update() {
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
-        mCurrentScreen = lobby;
-        printf("Joining room %s\n", mJoinScreen->InputText().c_str());
-        mClient->join_room(mJoinScreen->InputText().c_str());
+        if (mJoinScreen->GetSelectedRoom() != "") {
+          mCurrentScreen = lobby;
+          mClient->join_room(mJoinScreen->GetSelectedRoom());
+        }
       }
       break;
 

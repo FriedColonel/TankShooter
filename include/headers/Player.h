@@ -26,6 +26,7 @@ class Player : public GameEntity {
   ~Player();
 
   void Alive(bool alive);
+  bool Alive();
 
   void ChangePosition(Vector2 pos, GameEntity::DIRECTION direction,
                       bool moving = true);
