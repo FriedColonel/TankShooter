@@ -64,7 +64,7 @@ void *auto_recv_message() {
     getline(iss, event_name, '\n');
     getline(iss, data, '\n');
 
-    if (event_name == "game:get_rooms:success") {
+    if (event_name == "room:get_rooms:success") {
       cout << endl << "Rooms data" << data << endl;
 
       TSS::LinkedList *rooms = new TSS::LinkedList();
@@ -77,16 +77,29 @@ void *auto_recv_message() {
       continue;
     }
 
-    if (event_name == "game:create_room:success" ||
-        event_name == "game:join_room:success" ||
+    if (event_name == "leaderboard:get:success") {
+      cout << endl << "Leaderboard data" << data << endl;
+
+      TSS::LinkedList *leaderboard = new TSS::LinkedList();
+
+      json_to_leaderboard_list(data, leaderboard);
+      client->leaderboard = leaderboard;
+
+      cout << "Leaderboard list: " << client->leaderboard->length << endl;
+
+      continue;
+    }
+
+    if (event_name == "room:create_room:success" ||
+        event_name == "room:join_room:success" ||
+        event_name ==
+            "room:leave_room:success" ||  // found other user leave room
         event_name == "game:ready:success" ||
         event_name == "game:unready:success" ||
         event_name == "game:start:success" ||
-        event_name ==
-            "game:leave_room:success" ||       // found other user leave room
-        event_name == "game:pause:success" ||  // found leader pause game
-        event_name == "game:resume:success"    // found leader resume game
-    ) {
+        event_name == "game:pause:success" ||   // found leader pause game
+        event_name == "game:resume:success" ||  // found leader resume game
+        event_name == "game:game_end:success") {
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
 

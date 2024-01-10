@@ -81,13 +81,13 @@ void TSS::Client::create_room(int map) {
   printf("Username: %s\n", username.c_str());
 
   std::string send_message =
-      "game:create_room:" + username + ":" + std::to_string(map);
+      "room:create_room:" + username + ":" + std::to_string(map);
 
   sender(send_message);
 }
 
 void TSS::Client::join_room(std::string room_id) {
-  std::string send_message = "game:join_room:" + username + ":" + room_id;
+  std::string send_message = "room:join_room:" + username + ":" + room_id;
 
   sender(send_message);
 }
@@ -96,7 +96,7 @@ void TSS::Client::leave_room() {
   if (currentRoom == NULL) return;
 
   std::string send_message =
-      "game:leave_room:" + username + ":" + currentRoom->room_id;
+      "room:leave_room:" + username + ":" + currentRoom->room_id;
 
   this->currentRoom = NULL;
 
@@ -104,13 +104,13 @@ void TSS::Client::leave_room() {
 }
 
 void TSS::Client::get_rooms() {
-  char send_message[256] = "game:get_rooms";
+  char send_message[256] = "room:get_rooms";
 
   sender(send_message);
 }
 
 void TSS::Client::find_room(std::string room_id) {
-  std::string send_message = "game:find_room:" + room_id;
+  std::string send_message = "room:find_room:" + room_id;
 
   sender(send_message);
 }
@@ -176,6 +176,18 @@ void TSS::Client::resume_game() {
 void TSS::Client::player_dead() {
   std::string send_message =
       "game:player_dead:" + currentRoom->room_id + ":" + username;
+
+  sender(send_message);
+}
+
+void TSS::Client::game_end() {
+  std::string send_message = "game:game_end:" + currentRoom->room_id;
+
+  sender(send_message);
+}
+
+void TSS::Client::get_leaderboard() {
+  std::string send_message = "leaderboard:get";
 
   sender(send_message);
 }

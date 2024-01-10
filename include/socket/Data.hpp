@@ -27,6 +27,12 @@ struct User {
   bool is_login;
 };
 
+struct TopUser {
+  std::string username;
+  std::string room_id;
+  int points;
+};
+
 struct Player {
   int client_socket;
   std::string username;
@@ -52,6 +58,12 @@ void json_to_rooms_list(std::string str, LinkedList *rooms);
 // user converter
 json *user_to_json(User *user);
 User *json_to_user(json *j);
+
+// leaderboard converter
+json *top_user_to_json(TopUser *top_user);
+TopUser *json_to_top_user(json *j);
+std::string get_leaderboard_string(LinkedList *leaderboard);
+void json_to_leaderboard_list(std::string str, LinkedList *leaderboard);
 
 std::string json_to_string(json j);
 json *string_to_json(std::string str);

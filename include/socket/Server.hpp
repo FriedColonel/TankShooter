@@ -14,19 +14,25 @@
 namespace TSS {
 class Server : public SocketServer {
  private:
+  std::mutex user_mutex;
+  std::mutex room_mutex;
+
+  LinkedList *users;
+  LinkedList *online_users;
+  LinkedList *rooms;
+
   char buffer[256] = {0};
   int max_fd;
   fd_set current_sockets, ready_sockets;
 
   AuthHandler *auth_handler;
   GameHandler *game_handler;
+  RoomHandler *room_handler;
+  LeaderboardHandler *leaderboard_handler;
 
   int accepter();
   void handler(int client_socket);
   std::string make_response(std::string event_name, std::string data);
-
- public:
-  LinkedList *online_users;
 
  public:
   // Constructor
@@ -42,13 +48,12 @@ class Server : public SocketServer {
                          std::string room_id, bool is_send_to_sender);
   // Handle client events
   void handle_auth(int client_socket);
+  // Handle room events
+  void handle_room(int client_socket);
   // Handle game events
   void handle_game(int client_socket);
-
-  // Add to online users
-  void add_online_user(std::string username, int client_socket);
-  void remove_online_user(std::string username);
-  void update_online_user(std::string username, bool is_join_room);
+  // Handle leaderboard events
+  void handle_leaderboard(int client_socket);
 };
 }  // namespace TSS
 

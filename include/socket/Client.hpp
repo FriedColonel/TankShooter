@@ -34,6 +34,7 @@ class Client : public SocketClient {
 
  public:
   LinkedList *rooms;
+  LinkedList *leaderboard;
 
   static Client *Instance();
   static Client *Instance(int port, char *interface);
@@ -79,12 +80,18 @@ class Client : public SocketClient {
   // message format: game:move:stop:room_id:username:pos_x:pos_y
   void move_stop(float x, float y);
 
-  void close_socket();
+  // message format: game:game_end:room_id
+  void game_end();
+
+  // message format: leaderboard:get
+  void get_leaderboard();
 
   // Auth handler function
   void login();
   void register_user();
   void logout();
+
+  void close_socket();
 
   // Getter function
   Room *get_current_room();

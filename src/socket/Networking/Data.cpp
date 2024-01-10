@@ -49,8 +49,6 @@ TSS::Room *TSS::json_to_room(json *j) {
   for (int i = 0; i < players.size(); i++) {
     Player *player = new Player();
 
-    player->username =
-        (char *)malloc(players[i].at("username").get<std::string>().length());
     player->username = players[i].at("username").get<std::string>();
     player->tank = players[i].at("tank").get<int>();
     player->is_leader = players[i].at("is_leader").get<bool>();
@@ -90,4 +88,44 @@ json *TSS::user_to_json(User *user) {
   j->push_back(json::object_t::value_type("is_login", user->is_login));
 
   return j;
+}
+
+json *TSS::top_user_to_json(TopUser *user) {
+  json *j = new json();
+
+  j->push_back(json::object_t::value_type("username", user->username));
+  j->push_back(json::object_t::value_type("room_id", user->room_id));
+  j->push_back(json::object_t::value_type("points", user->points));
+
+  return j;
+}
+
+TSS::TopUser *TSS::json_to_top_user(json *j) {
+  TopUser *user = new TopUser();
+
+  user->username = j->at("username").get<std::string>();
+  user->room_id = j->at("room_id").get<std::string>();
+  user->points = j->at("points").get<int>();
+
+  return user;
+}
+
+std::string TSS::get_leaderboard_string(LinkedList *leaderboard) {
+  json leaderboard_json = json::array();
+
+  for (int i = 0; i < leaderboard->length; i++) {
+    TopUser *user = static_cast<TopUser *>(leaderboard->retrieve(i));
+    leaderboard_json.push_back(*top_user_to_json(user));
+  }
+
+  return json_to_string(leaderboard_json);
+}
+
+void TSS::json_to_leaderboard_list(std::string str, LinkedList *leaderboard) {
+  json *j = string_to_json(str);
+
+  for (int i = 0; i < j->size(); i++) {
+    TopUser *user = json_to_top_user(&j->at(i));
+    leaderboard->insert(0, user, sizeof(struct TopUser));
+  }
 }
