@@ -21,6 +21,7 @@ class StartScreen : public GameEntity {
 
   // play mode
   GameEntity* mPlayMode;
+  Texture* mLeaderBoardMode;
   Texture* mTrainingMode;
   Texture* mNewGameMode;
   Texture* mConnectGameMode;

@@ -238,7 +238,7 @@ void TSS::Server::handle_room(int client_socket) {
 
     std::string response_msg = make_response("room:leave_room", result);
 
-    broadcast_to_room(client_socket, result, std::string(room_id), false);
+    broadcast_to_room(client_socket, response_msg, std::string(room_id), false);
   }
 }
 

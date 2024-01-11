@@ -104,6 +104,12 @@ void *auto_recv_message() {
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
 
+      int alive_count = 0;
+      for (int i = 0; i < room->players.size(); i++)
+        if (room->players[i].status == 1) alive_count++;
+
+      client->alive_players = alive_count;
+
       cout << "Update room status: " << client->get_current_room()->room_id
            << endl;
 
@@ -182,6 +188,12 @@ void *auto_recv_message() {
 
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
+
+      int alive_count = 0;
+      for (int i = 0; i < room->players.size(); i++)
+        if (room->players[i].status == 1) alive_count++;
+
+      client->alive_players = alive_count;
 
       PlayScreen *playScreen = PlayScreen::Instance();
       playScreen->PlayerDead(dead_user);

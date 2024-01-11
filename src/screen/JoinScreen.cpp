@@ -147,7 +147,7 @@ void JoinScreen::UpdateRoomList() {
       TSS::Room* room = (TSS::Room*)rooms->retrieve(i);
 
       if (mInputText != " ") {
-        if (room->room_id != mInputText) continue;
+        if (room->room_id.find(mInputText) == std::string::npos) continue;
       }
 
       RoomInfo::Status status;

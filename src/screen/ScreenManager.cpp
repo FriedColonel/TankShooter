@@ -22,6 +22,7 @@ ScreenManager::ScreenManager() {
   mCurrentScreen = start;
 
   mStartScreen = StartScreen::Instance();
+  mLeaderBoardScreen = LeaderBoardScreen::Instance();
   mJoinScreen = JoinScreen::Instance();
   mPlayScreen = PlayScreen::Instance();
   mLobbyScreen = LobbyScreen::Instance();
@@ -36,6 +37,9 @@ ScreenManager::~ScreenManager() {
 
   StartScreen::Release();
   mStartScreen = NULL;
+
+  LeaderBoardScreen::Release();
+  mLeaderBoardScreen = NULL;
 
   JoinScreen::Release();
   mJoinScreen = NULL;
@@ -67,6 +71,8 @@ void ScreenManager::Update() {
           mClient->is_training = true;
           mPlayScreen->StartNewGame(true);
           mCurrentScreen = play;
+        } else if (mStartScreen->SelectedMode() == leaderBoard) {
+          mCurrentScreen = leaderBoard;
         }
       }
       break;
@@ -89,15 +95,16 @@ void ScreenManager::Update() {
       } else if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
         // check if this player is leader
         if (mClient->get_current_room()) {
-          for (int i = 0; i < mClient->get_current_room()->players.size();
-               i++) {
-            if (mClient->get_current_room()->players[i].status != 1) break;
+          if (mClient->get_current_room()->players.size() > 1)
+            for (int i = 0; i < mClient->get_current_room()->players.size();
+                 i++) {
+              if (mClient->get_current_room()->players[i].status != 1) break;
 
-            if (mClient->get_current_room()->players[i].username ==
-                    mClient->get_username() &&
-                mClient->get_current_room()->players[i].is_leader)
-              mClient->start_game();
-          }
+              if (mClient->get_current_room()->players[i].username ==
+                      mClient->get_username() &&
+                  mClient->get_current_room()->players[i].is_leader)
+                mClient->start_game();
+            }
         }
       }
 
@@ -126,8 +133,13 @@ void ScreenManager::Update() {
       mPlayScreen->Update();
       if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
         if (mPlayScreen->GameOver()) {
-          mCurrentScreen = result;
-          mResultScreen->UpdatePlayerRanking();
+          if (!mClient->is_training) {
+            mCurrentScreen = result;
+            mResultScreen->UpdatePlayerRanking();
+          } else {
+            mCurrentScreen = start;
+            mClient->leave_room();
+          }
         }
       } else if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
@@ -140,6 +152,13 @@ void ScreenManager::Update() {
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
         mClient->leave_room();
+      }
+      break;
+
+    case leaderBoard:
+      mLeaderBoardScreen->Update();
+      if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
+        mCurrentScreen = start;
       }
       break;
 
@@ -183,6 +202,10 @@ void ScreenManager::Render() {
 
     case result:
       mResultScreen->Render();
+
+    case leaderBoard:
+      mLeaderBoardScreen->Render();
+      break;
 
     default:
       break;

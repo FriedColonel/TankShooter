@@ -3,6 +3,7 @@
 
 #include <QuickSDL/InputManager.h>
 #include <headers/JoinScreen.h>
+#include <headers/LeaderBoardScreen.h>
 #include <headers/LobbyScreen.h>
 #include <headers/MapChooseScreen.h>
 #include <headers/PlayScreen.h>
@@ -13,7 +14,16 @@
 
 class ScreenManager {
  public:
-  enum SCREENS { training, mapChoose, join, lobby, start, play, result };
+  enum SCREENS {
+    mapChoose,
+    join,
+    training,
+    leaderBoard,
+    lobby,
+    start,
+    play,
+    result
+  };
 
  private:
   static ScreenManager* sInstance;
@@ -22,6 +32,7 @@ class ScreenManager {
   InputManager* mInput;
 
   StartScreen* mStartScreen;
+  LeaderBoardScreen* mLeaderBoardScreen;
   LobbyScreen* mLobbyScreen;
   JoinScreen* mJoinScreen;
   PlayScreen* mPlayScreen;

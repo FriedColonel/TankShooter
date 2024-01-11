@@ -37,6 +37,7 @@ class Client : public SocketClient {
   LinkedList *leaderboard;
 
   bool is_training;
+  int alive_players;
 
   static Client *Instance();
   static Client *Instance(int port, char *interface);

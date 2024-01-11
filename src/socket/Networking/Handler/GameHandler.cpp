@@ -135,9 +135,11 @@ std::string TSS::GameHandler::game_end(std::string room_id) {
   room->status = 4;
 
   for (int i = 0; i < room->players.size(); i++) {
-    room->players[i].status = 0;
+    // room->players[i].status = 0;
     int user_point = 8 - room->players[i].points * 2;
     room->players[i].points = user_point;
+
+    std::cout << "User point: " << user_point << std::endl;
 
     std::string saved_point_path =
         saved_archivement_prefix + room->players[i].username + ".txt";

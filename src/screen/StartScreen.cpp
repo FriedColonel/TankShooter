@@ -38,8 +38,10 @@ StartScreen::StartScreen() {
   // play mode entities
   mPlayMode =
       new GameEntity(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
-                             Graphics::Instance()->SCREEN_HEIGHT * 0.55f));
+                             Graphics::Instance()->SCREEN_HEIGHT * 0.6f));
 
+  mLeaderBoardMode =
+      new Texture("LEADER BOARD", "Font/ARCADE.TTF", 32, {230, 230, 230});
   mTrainingMode =
       new Texture("TRAINING", "Font/ARCADE.TTF", 32, {230, 230, 230});
   mNewGameMode =
@@ -48,15 +50,17 @@ StartScreen::StartScreen() {
       new Texture("JOIN ROOM", "Font/ARCADE.TTF", 32, {230, 230, 230});
   mCursor = new Texture("Cursor/cursor.png");
 
+  mLeaderBoardMode->Parent(mPlayMode);
   mTrainingMode->Parent(mPlayMode);
   mNewGameMode->Parent(mPlayMode);
   mConnectGameMode->Parent(mPlayMode);
   mCursor->Parent(mPlayMode);
 
-  mTrainingMode->Pos(Vector2(0.0f, -64.0f));
-  mNewGameMode->Pos(VEC2_ZERO);
-  mConnectGameMode->Pos(Vector2(0.0f, 64.0f));
-  mCursor->Pos(Vector2(-200.0f, -64.0f));
+  mTrainingMode->Pos(Vector2(0.0f, 32.0f));
+  mNewGameMode->Pos(Vector2(0.0f, -96.0f));
+  mConnectGameMode->Pos(Vector2(0.0f, -32.0f));
+  mLeaderBoardMode->Pos(Vector2(0.0f, 96.0f));
+  mCursor->Pos(Vector2(-250.0f, -96.0f));
 
   mPlayMode->Parent(this);
 
@@ -95,6 +99,9 @@ StartScreen::~StartScreen() {
   delete mPlayMode;
   mPlayMode = NULL;
 
+  delete mLeaderBoardMode;
+  mLeaderBoardMode = NULL;
+
   delete mTrainingMode;
   mTrainingMode = NULL;
 
@@ -129,6 +136,7 @@ void StartScreen::Render() {
   mHighScore->Render();
   mPlayerTwo->Render();
 
+  mLeaderBoardMode->Render();
   mTrainingMode->Render();
   mNewGameMode->Render();
   mConnectGameMode->Render();
@@ -142,8 +150,8 @@ void StartScreen::ChangeMode(int mode) {
 
   if (mSelectedMode < 0) {
     mSelectedMode = 0;
-  } else if (mSelectedMode > 2) {
-    mSelectedMode = 2;
+  } else if (mSelectedMode > 3) {
+    mSelectedMode = 3;
   }
 
   mCursor->Pos(mCursorStartPos + mCursorOffset * mSelectedMode);

@@ -7,6 +7,7 @@ TSS::LeaderboardHandler::LeaderboardHandler(std::mutex *user_mutex,
 }
 
 std::string TSS::LeaderboardHandler::get_leaderboard() {
+  std::cout << "Getting leaderboard " << users->length << std::endl;
   for (int i = 0; i < users->length; i++) {
     TopUser *top_user = new TopUser();
 

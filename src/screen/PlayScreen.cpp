@@ -74,8 +74,11 @@ void PlayScreen::StartNewGame(bool isTraining) {
     mPlayer[i] = NULL;
   }
 
+  mPlayers.clear();
+
   if (mIsTraining) {
     mPlayer[0] = new Player(true, BASE_POSITION::bottomLeft, COLOR::red);
+    mPlayers[mClient->get_username()] = mPlayer[0];
 
     for (int i = 1; i < 4; i++)
       mPlayer[i] = new Player(false, static_cast<BASE_POSITION>(i),
@@ -134,33 +137,18 @@ void PlayScreen::Update() {
   int alive = 0;
   int thisPlayer = 0;
 
-  for (int i = 0; i < 4; i++) {
-    if (mPlayer[i] != NULL) {
-      if (mPlayer[i]->IsThisPlayer()) {
-        if (!mPlayer[i]->Alive()) {
-          mGameOver = true;
-          break;
-        }
-        thisPlayer = i;
-      }
-
-      if (mPlayer[i]->Alive()) alive++;
-    }
+  if (!mPlayers[mClient->get_username()]->Alive()) {
+    mGameOver = true;
   }
 
-  if (alive == 1) {
-    if (mPlayer[thisPlayer]->IsThisPlayer()) {
-      mYouWin = true;
-      if (!mIsTraining) {
-        if (mClient->get_current_room()->status != 4 && !mGameOverSent) {
-          mClient->game_end();
-          mGameOverSent = true;
-        }
-      }
-    }
-
+  if (mClient->alive_players == 1 && !mGameOverSent) {
     mGameOver = true;
-  };
+    if (mPlayers[mClient->get_username()]->Alive()) {
+      mYouWin = true;
+      mClient->game_end();
+      mGameOverSent = true;
+    }
+  }
 
   if (mGameOver) {
     if (mYouWin) {

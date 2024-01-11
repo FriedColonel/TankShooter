@@ -100,9 +100,9 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
   mScoreText->Parent(this);
   mScoreText->Pos(Vector2(100.0f, 0.0f));
 
-  std::string rankText = score == 10  ? "1st"
-                         : score == 5 ? "2nd"
-                         : score == 1 ? "3rd"
+  std::string rankText = score == 8   ? "1st"
+                         : score == 4 ? "2nd"
+                         : score == 2 ? "3rd"
                                       : "4th";
 
   mRankText = new Texture(rankText, "Font/ARCADE.TTF", 32, {255, 255, 255});

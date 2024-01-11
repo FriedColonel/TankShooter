@@ -53,12 +53,13 @@ void LobbyScreen::Update() {
   if (mClient->get_current_room()) {
     SetRoomCode(mClient->get_current_room()->room_id);
 
-    for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
+    for (int i = 0; i < 4; i++)
       if (mPlayerInfo[i] != NULL) {
         delete mPlayerInfo[i];
         mPlayerInfo[i] = NULL;
       }
 
+    for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
       mPlayerInfo[i] = new PlayerInfo(
           mClient->get_current_room()->players[i].username,
           static_cast<COLOR>(mClient->get_current_room()->players[i].tank),

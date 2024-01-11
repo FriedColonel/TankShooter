@@ -11,7 +11,7 @@ Bullet::Bullet(bool isFriendly) : PhysicEntity() {
   mTexture->Pos(VEC2_ZERO);
   mTexture->WrapMode(AnimatedTexture::loop);
 
-  mSpeed = 300.0f;
+  mSpeed = 500.0f;
 
   mDirection = up;
 

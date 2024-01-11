@@ -9,7 +9,7 @@
 using namespace QuickSDL;
 
 class PlayerRanking : public GameEntity {
- private:
+ protected:
   GameEntity* mTank;
   Texture *mNameText, *mScoreText, *mRankText;
   AnimatedTexture *mBase, *mWeapon;
