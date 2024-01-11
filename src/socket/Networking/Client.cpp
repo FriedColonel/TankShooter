@@ -309,6 +309,8 @@ bool TSS::Client::register_user(char *username, char *password) {
     return true;
   }
 
+  std::cout << recv_msg << std::endl;
+
   return false;
 }
 

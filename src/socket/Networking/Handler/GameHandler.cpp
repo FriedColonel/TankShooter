@@ -106,9 +106,18 @@ std::string TSS::GameHandler::player_dead(std::string username,
     return "";
   }
 
+  // get dead players
+  int dead_players = 0;
+  for (int i = 0; i < room->players.size(); i++) {
+    if (room->players[i].status == 3) {
+      dead_players++;
+    }
+  }
+
   for (int i = 0; i < room->players.size(); i++) {
     if (room->players[i].username == username) {
       room->players[i].status = 3;
+      room->players[i].points = room->players.size() - dead_players;
       break;
     }
   }
@@ -127,11 +136,13 @@ std::string TSS::GameHandler::game_end(std::string room_id) {
 
   for (int i = 0; i < room->players.size(); i++) {
     room->players[i].status = 0;
+    int user_point = 8 - room->players[i].points * 2;
+    room->players[i].points = user_point;
+
     std::string saved_point_path =
         saved_archivement_prefix + room->players[i].username + ".txt";
 
-    std::string saved_point =
-        room_id + " " + std::to_string(room->players[i].points) + "\n";
+    std::string saved_point = room_id + " " + std::to_string(user_point) + "\n";
 
     TSS::append_file((char *)saved_point_path.c_str(),
                      (void *)saved_point.c_str(), saved_point.length());

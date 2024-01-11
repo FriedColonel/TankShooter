@@ -39,7 +39,7 @@ struct Player {
   int tank;  // 1: red, 2: blue, 3:green, 4:white
   bool is_leader;
   int status;  // 0: not ready, 1: ready, 2: out, 3: die
-  int points;
+  int points;  // 1: top1, 2: top2, 3: top3, 4: top4
 };
 
 struct Room {
