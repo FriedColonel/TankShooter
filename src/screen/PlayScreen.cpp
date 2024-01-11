@@ -20,11 +20,18 @@ PlayScreen::PlayScreen() {
   mGameMap = GameMap::Instance();
 
   mGameOver = false;
+  mYouWin = false;
+  mGameOverSent = false;
+  mIsTraining = false;
 
   mGameOverText1 = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
   // set position of mGameOverText1 to bottom center of the screen
   mGameOverText1->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                               Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
+
+  mYouWinText = new Texture("YOU WIN", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  mYouWinText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                           Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
 
   mGameOverText2 = new Texture("PRESS ENTER TO CONTINUE", "Font/ARCADE.TTF", 32,
                                {150, 0, 0});
@@ -59,25 +66,44 @@ PlayScreen::~PlayScreen() {
   mGameOverText2 = NULL;
 }
 
-void PlayScreen::StartNewGame() {
+void PlayScreen::StartNewGame(bool isTraining) {
+  mIsTraining = isTraining;
+
   for (int i = 0; i < 4; i++) {
     delete mPlayer[i];
     mPlayer[i] = NULL;
   }
 
-  for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
-    mPlayer[i] = new Player(
-        mClient->get_current_room()->players[i].username ==
-            mClient->get_username(),
-        static_cast<BASE_POSITION>(i),
-        static_cast<COLOR>(mClient->get_current_room()->players[i].tank));
-    mPlayer[i]->Parent(this);
-    mPlayer[i]->Pos(Vector2(100 + i * 100, 100));
+  if (mIsTraining) {
+    mPlayer[0] = new Player(true, BASE_POSITION::bottomLeft, COLOR::red);
 
-    mPlayers[mClient->get_current_room()->players[i].username] = mPlayer[i];
+    for (int i = 1; i < 4; i++)
+      mPlayer[i] = new Player(false, static_cast<BASE_POSITION>(i),
+                              static_cast<COLOR>(i + 1), true);
+
+    mGameMap->SetMapChoice(1);
+  } else {
+    for (int i = 0; i < mClient->get_current_room()->players.size(); i++) {
+      mPlayer[i] = new Player(
+          mClient->get_current_room()->players[i].username ==
+              mClient->get_username(),
+          static_cast<BASE_POSITION>(i),
+          static_cast<COLOR>(mClient->get_current_room()->players[i].tank));
+
+      mPlayers[mClient->get_current_room()->players[i].username] = mPlayer[i];
+    }
+
+    mGameMap->SetMapChoice(mClient->get_current_room()->map);
   }
 
-  mGameMap->SetMapChoice(mClient->get_current_room()->map);
+  mGameOver = false;
+  mYouWin = false;
+  mGameOverSent = false;
+
+  mGameOverText1->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                              Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
+  mYouWinText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                           Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
 }
 
 void PlayScreen::SetPlayerPosition(std::string username, Vector2 pos,
@@ -94,6 +120,8 @@ void PlayScreen::PlayerDead(std::string username) {
   mPlayers[username]->Dead();
 }
 
+bool PlayScreen::GameOver() { return mGameOver; }
+
 void PlayScreen::Update() {
   mGameMap->Update();
 
@@ -104,24 +132,59 @@ void PlayScreen::Update() {
   }
 
   int alive = 0;
+  int thisPlayer = 0;
 
   for (int i = 0; i < 4; i++) {
     if (mPlayer[i] != NULL) {
-      if (mPlayer[i]->IsThisPlayer() && !mPlayer[i]->Alive()) {
-        mGameOver = true;
-        break;
+      if (mPlayer[i]->IsThisPlayer()) {
+        if (!mPlayer[i]->Alive()) {
+          mGameOver = true;
+          break;
+        }
+        thisPlayer = i;
       }
 
       if (mPlayer[i]->Alive()) alive++;
     }
   }
 
-  if (alive == 1) mGameOver = true;
+  if (alive == 1) {
+    if (mPlayer[thisPlayer]->IsThisPlayer()) {
+      mYouWin = true;
+      if (!mIsTraining) {
+        if (mClient->get_current_room()->status != 4 && !mGameOverSent) {
+          mClient->game_end();
+          mGameOverSent = true;
+        }
+      }
+    }
 
-  if (mGameOver && mGameOverText1->Pos(world).y >
-                       Graphics::Instance()->SCREEN_HEIGHT * 0.5f) {
-    // game over text scrolling up from bottom of the screen
-    mGameOverText1->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
+    mGameOver = true;
+  };
+
+  if (mGameOver) {
+    if (mYouWin) {
+      if (mYouWinText->Pos(world).y >
+          Graphics::Instance()->SCREEN_HEIGHT * 0.5f) {
+        mYouWinText->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
+        mGameOverText2->Parent(mYouWinText);
+      }
+    } else {
+      if (mGameOverText1->Pos(world).y >
+          Graphics::Instance()->SCREEN_HEIGHT * 0.5f) {
+        // game over text scrolling up from bottom of the screen
+        mGameOverText1->Translate(VEC2_UP * 100 * mTimer->DeltaTime(), world);
+        mGameOverText2->Parent(mGameOverText1);
+      }
+    }
+  }
+}
+
+void PlayScreen::LateUpdate() {
+  for (int i = 0; i < 4; i++) {
+    if (mPlayer[i] != NULL) {
+      mPlayer[i]->LateUpdate();
+    }
   }
 }
 
@@ -135,7 +198,11 @@ void PlayScreen::Render() {
   }
 
   if (mGameOver) {
-    mGameOverText1->Render();
+    if (mYouWin)
+      mYouWinText->Render();
+    else
+      mGameOverText1->Render();
+
     mGameOverText2->Render();
   }
 }

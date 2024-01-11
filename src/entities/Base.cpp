@@ -1,8 +1,9 @@
 #include <headers/Base.h>
+#include <headers/Bot.h>
 #include <headers/BoxCollider.h>
 #include <headers/Bullet.h>
 
-Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
+Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color, bool isBot) {
   mTimer = Timer::Instance();
   mGraphics = Graphics::Instance();
   mPhysicMgr = PhysicManager::Instance();
@@ -10,6 +11,7 @@ Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
 
   mAnimating = false;
   mIsThisPlayer = isThisPlayer;
+  mIsBot = isBot;
 
   mRespawnTimer = 0.0f;
   mRespawnDelay = 1.0f;
@@ -19,7 +21,10 @@ Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color) {
   mId =
       mPhysicMgr->RegisterEntity(this, PhysicManager::CollisionLayers::Terrain);
 
-  mTank = new Tank(isThisPlayer, basePos, color);
+  if (isBot)
+    mTank = new Bot(basePos, color);
+  else
+    mTank = new Tank(isThisPlayer, basePos, color);
 
   mTexture = new Texture("Base/eagle.png", 0, 0, 60, 60);
   mTexture->Parent(this);
@@ -104,8 +109,6 @@ Base::~Base() {
 
   delete mDeathAnimation;
   mDeathAnimation = NULL;
-
-  mId = 0;
 }
 
 void Base::HandlePlayerDeath() {
@@ -120,7 +123,10 @@ void Base::HandlePlayerDeath() {
       mRespawnTimer = 0.0f;
 
       delete mTank;
-      mTank = new Tank(mIsThisPlayer, mBasePosition, mColor);
+      if (mIsBot)
+        mTank = new Bot(mBasePosition, mColor);
+      else
+        mTank = new Tank(mIsThisPlayer, mBasePosition, mColor);
     }
   }
 }

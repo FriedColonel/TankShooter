@@ -7,6 +7,8 @@
 PhysicEntity::PhysicEntity() : GameEntity() {
   mBroadPhaseCollider = nullptr;
   mId = 0;
+
+  mIsColliding = false;
 }
 
 PhysicEntity::~PhysicEntity() {

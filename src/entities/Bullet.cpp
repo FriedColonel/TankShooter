@@ -2,7 +2,7 @@
 #include <headers/Bullet.h>
 #include <headers/PhysicManager.h>
 
-Bullet::Bullet(bool isFriendly) {
+Bullet::Bullet(bool isFriendly) : PhysicEntity() {
   mTimer = Timer::Instance();
 
   mTexture = new AnimatedTexture("Bullet/bullet.png", 11 * 32, 0, 32, 32, 4,

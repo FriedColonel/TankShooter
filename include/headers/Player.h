@@ -22,7 +22,8 @@ class Player : public GameEntity {
   Base* mBase;
 
  public:
-  Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color);
+  Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color,
+         bool isBot = false);
   ~Player();
 
   void Alive(bool alive);
@@ -36,6 +37,7 @@ class Player : public GameEntity {
   bool IsThisPlayer();
 
   void Update();
+  void LateUpdate();
   void Render();
 };
 

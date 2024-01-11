@@ -22,10 +22,15 @@ TSS::Client::Client(int domain, int service, int protocol, int port,
   rooms = new LinkedList();
 
   currentRoom = NULL;
+
+  is_training = false;
 }
 
 TSS::Client::~Client() {
   logout();
+  // sleep thread to wait for server response
+  sleep(1);
+  leave_room();
   close(get_sock());
 }
 
@@ -73,8 +78,6 @@ void TSS::Client::logout() {
   std::string send_message = "auth:logout:" + username;
 
   sender(send_message);
-
-  leave_room();
 }
 
 void TSS::Client::create_room(int map) {
@@ -136,6 +139,8 @@ void TSS::Client::start_game() {
 }
 
 void TSS::Client::shot_bullet(float x, float y, int direction) {
+  if (is_training) return;
+
   std::string send_message = "game:shoot:" + currentRoom->room_id + ":" +
                              username + ":" + std::to_string(x) + ":" +
                              std::to_string(y) + ":" +
@@ -145,6 +150,8 @@ void TSS::Client::shot_bullet(float x, float y, int direction) {
 }
 
 void TSS::Client::move_start(float x, float y, int direction) {
+  if (is_training) return;
+
   std::string send_message = "game:move:start:" + currentRoom->room_id + ":" +
                              username + ":" + std::to_string(x) + ":" +
                              std::to_string(y) + ":" +
@@ -154,6 +161,8 @@ void TSS::Client::move_start(float x, float y, int direction) {
 }
 
 void TSS::Client::move_stop(float x, float y) {
+  if (is_training) return;
+
   std::string send_message = "game:move:stop:" + currentRoom->room_id + ":" +
                              username + ":" + std::to_string(x) + ":" +
                              std::to_string(y);
@@ -162,18 +171,24 @@ void TSS::Client::move_stop(float x, float y) {
 }
 
 void TSS::Client::pause_game() {
+  if (is_training) return;
+
   std::string send_message = "game:pause:" + currentRoom->room_id;
 
   sender(send_message);
 }
 
 void TSS::Client::resume_game() {
+  if (is_training) return;
+
   std::string send_message = "game:resume:" + currentRoom->room_id;
 
   sender(send_message);
 }
 
 void TSS::Client::player_dead() {
+  if (is_training) return;
+
   std::string send_message =
       "game:player_dead:" + currentRoom->room_id + ":" + username;
 
@@ -181,6 +196,8 @@ void TSS::Client::player_dead() {
 }
 
 void TSS::Client::game_end() {
+  if (is_training) return;
+
   std::string send_message = "game:game_end:" + currentRoom->room_id;
 
   sender(send_message);

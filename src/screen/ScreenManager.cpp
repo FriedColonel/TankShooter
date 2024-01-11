@@ -26,6 +26,8 @@ ScreenManager::ScreenManager() {
   mPlayScreen = PlayScreen::Instance();
   mLobbyScreen = LobbyScreen::Instance();
   mMapChooseScreen = MapChooseScreen::Instance();
+  mResultScreen = ResultScreen::Instance();
+
   mGameMap = GameMap::Instance();
 }
 
@@ -46,6 +48,9 @@ ScreenManager::~ScreenManager() {
 
   MapChooseScreen::Release();
   mMapChooseScreen = NULL;
+
+  ResultScreen::Release();
+  mResultScreen = NULL;
 }
 
 void ScreenManager::Update() {
@@ -58,6 +63,10 @@ void ScreenManager::Update() {
         } else if (mStartScreen->SelectedMode() == join) {
           mJoinScreen->UpdateRoomList();
           mCurrentScreen = join;
+        } else if (mStartScreen->SelectedMode() == training) {
+          mClient->is_training = true;
+          mPlayScreen->StartNewGame(true);
+          mCurrentScreen = play;
         }
       }
       break;
@@ -94,6 +103,7 @@ void ScreenManager::Update() {
 
       if (mClient->get_current_room()) {
         if (mClient->get_current_room()->status == 2) {
+          mClient->is_training = false;
           mCurrentScreen = play;
           mPlayScreen->StartNewGame();
         }
@@ -114,9 +124,34 @@ void ScreenManager::Update() {
 
     case play:
       mPlayScreen->Update();
+      if (mInput->KeyPressed(SDL_SCANCODE_RETURN)) {
+        if (mPlayScreen->GameOver()) {
+          mCurrentScreen = result;
+          mResultScreen->UpdatePlayerRanking();
+        }
+      } else if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
+        mCurrentScreen = start;
+        mClient->leave_room();
+      }
+      break;
+
+    case result:
+      mResultScreen->Update();
       if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
         mCurrentScreen = start;
+        mClient->leave_room();
       }
+      break;
+
+    default:
+      break;
+  }
+}
+
+void ScreenManager::LateUpdate() {
+  switch (mCurrentScreen) {
+    case play:
+      mPlayScreen->LateUpdate();
       break;
 
     default:
@@ -145,6 +180,9 @@ void ScreenManager::Render() {
     case play:
       mPlayScreen->Render();
       break;
+
+    case result:
+      mResultScreen->Render();
 
     default:
       break;

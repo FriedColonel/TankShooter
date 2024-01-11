@@ -5,14 +5,15 @@
 
 #include <iostream>
 
-Player::Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color) {
+Player::Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color,
+               bool isBot) {
   mTimer = Timer::Instance();
   mInput = InputManager::Instance();
 
   mAlive = true;
   mThisPlayer = isThisPlayer;
 
-  mBase = new Base(basePos, isThisPlayer, color);
+  mBase = new Base(basePos, isThisPlayer, color, isBot);
 
   Active(true);
 }
@@ -49,5 +50,7 @@ void Player::Update() {
 
   mBase->Update();
 }
+
+void Player::LateUpdate() { mBase->mTank->LateUpdate(); }
 
 void Player::Render() { mBase->Render(); }

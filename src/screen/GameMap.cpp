@@ -59,7 +59,7 @@ void GameMap::Update() {
 void GameMap::Render() {
   mBackground->Render();
 
-  for (Brick* brick : mBricks) {
+  for (auto brick : mBricks) {
     if (brick != NULL) brick->Render();
   }
 }
@@ -89,7 +89,4 @@ void GameMap::Reset() {
   }
 
   mBricks.clear();
-
-  // create a new brick vector
-  mBricks = std::vector<Brick*>();
 }

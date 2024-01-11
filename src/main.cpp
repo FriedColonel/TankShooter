@@ -20,6 +20,7 @@ int main(int argc, char const *argv[]) {
   }
 
   TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
+  // TSS::Client *client = TSS::Client::Instance(5501, "127.0.0.1");
   client->auth_menu();
 
   QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();

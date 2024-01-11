@@ -22,6 +22,7 @@ class Base : public PhysicEntity {
 
   bool mAnimating;
   bool mIsThisPlayer;
+  bool mIsBot;
 
   COLOR mColor;
 
@@ -44,7 +45,7 @@ class Base : public PhysicEntity {
 
  public:
   Base(BASE_POSITION basePos, bool isThisPlayer = true,
-       COLOR color = COLOR::red);
+       COLOR color = COLOR::red, bool isBot = false);
   ~Base();
 
   bool WasHit();

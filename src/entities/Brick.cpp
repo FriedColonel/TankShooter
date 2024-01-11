@@ -3,7 +3,7 @@
 #include <headers/Bullet.h>
 #include <headers/PhysicManager.h>
 
-Brick::Brick() {
+Brick::Brick() : PhysicEntity() {
   mId = PhysicManager::Instance()->RegisterEntity(
       this, PhysicManager::CollisionLayers::Terrain);
 
@@ -27,7 +27,6 @@ Brick::Brick() {
 }
 
 Brick::~Brick() {
-  mId = 0;
   delete mTexture;
   mTexture = NULL;
 

@@ -11,6 +11,9 @@ inline bool instanceof (const T* ptr) {
 }
 
 class PhysicEntity : public GameEntity {
+ public:
+  bool mIsColliding;
+
  protected:
   unsigned long mId;
 

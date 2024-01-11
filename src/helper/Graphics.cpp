@@ -70,6 +70,8 @@ bool Graphics::Init() {
   // Creating the renderer
   mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED);
 
+  SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+
   // Handling with the renderer creation errors
   if (mRenderer == NULL) {
     printf("Renderer Creation Error: %s\n", SDL_GetError());

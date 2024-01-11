@@ -28,6 +28,8 @@ json *TSS::room_to_json(Room *room) {
         json::object_t::value_type("is_leader", room->players[i].is_leader));
     player->push_back(
         json::object_t::value_type("status", room->players[i].status));
+    player->push_back(
+        json::object_t::value_type("points", room->players[i].points));
 
     players->push_back(*player);
   }
@@ -53,6 +55,7 @@ TSS::Room *TSS::json_to_room(json *j) {
     player->tank = players[i].at("tank").get<int>();
     player->is_leader = players[i].at("is_leader").get<bool>();
     player->status = players[i].at("status").get<int>();
+    player->points = players[i].at("points").get<int>();
 
     room->players.push_back(*player);
   }

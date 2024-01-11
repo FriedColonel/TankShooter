@@ -16,7 +16,7 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
 
   if (isThisPlayer) {
     mId = mPhysicMgr->RegisterEntity(this,
-                                     PhysicManager::CollisionLayers::Friendly);
+                                     PhysicManager::CollisionLayers::Hostile);
   } else {
     mId = mPhysicMgr->RegisterEntity(this,
                                      PhysicManager::CollisionLayers::Hostile);
@@ -76,7 +76,7 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
 
   for (int i = 0; i < MAX_BULLETS; i++) {
     if (isThisPlayer) {
-      mBullets[i] = new Bullet(true);
+      mBullets[i] = new Bullet(false);
     } else {
       mBullets[i] = new Bullet(false);
     }
@@ -107,36 +107,7 @@ Tank::~Tank() {
 }
 
 void Tank::HandleMovement() {
-  if (mIsThisPlayer) {
-    if (!mInput->KeyDown(SDL_SCANCODE_A) && !mInput->KeyDown(SDL_SCANCODE_D) &&
-        !mInput->KeyDown(SDL_SCANCODE_W) && !mInput->KeyDown(SDL_SCANCODE_S) &&
-        mIsMoving) {
-      mIsMoving = false;
-      mClient->move_stop(Pos().x, Pos().y);
-    }
-
-    if (mInput->KeyPressed(SDL_SCANCODE_A)) {
-      mIsMoving = true;
-      mDirection = left;
-      mClient->move_start(Pos().x, Pos().y, mDirection);
-    } else if (mInput->KeyPressed(SDL_SCANCODE_D)) {
-      mIsMoving = true;
-      mDirection = right;
-      mClient->move_start(Pos().x, Pos().y, mDirection);
-    } else if (mInput->KeyPressed(SDL_SCANCODE_W)) {
-      mIsMoving = true;
-      mDirection = up;
-      mClient->move_start(Pos().x, Pos().y, mDirection);
-    } else if (mInput->KeyPressed(SDL_SCANCODE_S)) {
-      mIsMoving = true;
-      mDirection = down;
-      mClient->move_start(Pos().x, Pos().y, mDirection);
-    } else if (mInput->KeyPressed(SDL_SCANCODE_J)) {
-      Dead();
-    }
-  }
-
-  if (mIsMoving) {
+  if (mIsMoving && !mIsColliding) {
     switch (mDirection) {
       case up:
         Translate(VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
@@ -195,8 +166,24 @@ void Tank::Shoot() {
   for (int i = 0; i < MAX_BULLETS; i++) {
     if (!mBullets[i]->Active()) {
       mAnimating = true;
-      mBullets[i]->Fire(Pos(), mFireDirection);
-      mClient->shot_bullet(Pos().x, Pos().y, mFireDirection);
+      switch (mFireDirection) {
+        case up:
+          mBullets[i]->Fire(Pos() - Vector2(0.0f, 64.0f), mFireDirection);
+          mClient->shot_bullet(Pos().x, Pos().y - 64.0f, mFireDirection);
+          break;
+        case down:
+          mBullets[i]->Fire(Pos() + Vector2(0.0f, 64.0f), mFireDirection);
+          mClient->shot_bullet(Pos().x, Pos().y + 64.0f, mFireDirection);
+          break;
+        case left:
+          mBullets[i]->Fire(Pos() - Vector2(64.0f, 0.0f), mFireDirection);
+          mClient->shot_bullet(Pos().x - 64.0f, Pos().y, mFireDirection);
+          break;
+        case right:
+          mBullets[i]->Fire(Pos() + Vector2(64.0f, 0.0f), mFireDirection);
+          mClient->shot_bullet(Pos().x + 64.0f, Pos().y, mFireDirection);
+          break;
+      }
       break;
     }
   }
@@ -242,18 +229,19 @@ bool Tank::WasHit() { return mWasHit; }
 
 void Tank::Hit(PhysicEntity* other) {
   if (instanceof <Brick>(other) || instanceof <Base>(other)) {
+    mIsColliding = true;
     switch (mDirection) {
       case up:
-        Translate(-2 * VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
+        Translate(-VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
         break;
       case down:
-        Translate(2 * VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
+        Translate(VEC2_UP * mMoveSpeed * mTimer->DeltaTime(), world);
         break;
       case left:
-        Translate(2 * VEC2_RIGHT * mMoveSpeed * mTimer->DeltaTime(), world);
+        Translate(VEC2_RIGHT * mMoveSpeed * mTimer->DeltaTime(), world);
         break;
       case right:
-        Translate(-2 * VEC2_RIGHT * mMoveSpeed * mTimer->DeltaTime(), world);
+        Translate(-VEC2_RIGHT * mMoveSpeed * mTimer->DeltaTime(), world);
         break;
     }
     return;
@@ -291,6 +279,37 @@ void Tank::Update() {
 
   for (int i = 0; i < MAX_BULLETS; i++) {
     mBullets[i]->Update();
+  }
+}
+
+void Tank::LateUpdate() {
+  if (mIsThisPlayer && !mIsColliding) {
+    if (!mInput->KeyDown(SDL_SCANCODE_A) && !mInput->KeyDown(SDL_SCANCODE_D) &&
+        !mInput->KeyDown(SDL_SCANCODE_W) && !mInput->KeyDown(SDL_SCANCODE_S) &&
+        mIsMoving) {
+      mIsMoving = false;
+      mClient->move_stop(Pos().x, Pos().y);
+    }
+
+    if (mInput->KeyPressed(SDL_SCANCODE_A)) {
+      mIsMoving = true;
+      mDirection = left;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_D)) {
+      mIsMoving = true;
+      mDirection = right;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_W)) {
+      mIsMoving = true;
+      mDirection = up;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_S)) {
+      mIsMoving = true;
+      mDirection = down;
+      mClient->move_start(Pos().x, Pos().y, mDirection);
+    } else if (mInput->KeyPressed(SDL_SCANCODE_J)) {
+      Dead();
+    }
   }
 }
 

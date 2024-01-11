@@ -16,9 +16,11 @@
 using namespace QuickSDL;
 
 class Tank : public PhysicEntity {
- private:
+ protected:
   static const int MOVE_SPEED = 100;
+  static const int MAX_BULLETS = 5;
 
+ protected:
   int mId;
 
   Timer* mTimer;
@@ -44,7 +46,6 @@ class Tank : public PhysicEntity {
   DIRECTION mDirection;
   DIRECTION mFireDirection;
 
-  static const int MAX_BULLETS = 5;
   Bullet* mBullets[MAX_BULLETS];
 
  private:
@@ -69,6 +70,7 @@ class Tank : public PhysicEntity {
                       bool moving = true);
 
   void Update();
+  virtual void LateUpdate();
   void Render();
 };
 
