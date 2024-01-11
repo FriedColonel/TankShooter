@@ -22,8 +22,10 @@ TSS::Client::Client(int domain, int service, int protocol, int port,
   rooms = new LinkedList();
 
   currentRoom = NULL;
+  leaderboard = NULL;
 
   is_training = false;
+  is_game_paused = false;
 }
 
 TSS::Client::~Client() {
@@ -171,7 +173,10 @@ void TSS::Client::move_stop(float x, float y) {
 }
 
 void TSS::Client::pause_game() {
-  if (is_training) return;
+  if (is_training) {
+    is_game_paused = true;
+    return;
+  }
 
   std::string send_message = "game:pause:" + currentRoom->room_id;
 
@@ -179,7 +184,10 @@ void TSS::Client::pause_game() {
 }
 
 void TSS::Client::resume_game() {
-  if (is_training) return;
+  if (is_training) {
+    is_game_paused = false;
+    return;
+  }
 
   std::string send_message = "game:resume:" + currentRoom->room_id;
 

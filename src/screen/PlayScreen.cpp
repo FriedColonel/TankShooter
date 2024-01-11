@@ -24,6 +24,16 @@ PlayScreen::PlayScreen() {
   mGameOverSent = false;
   mIsTraining = false;
 
+  mPauseText = new Texture("PAUSED", "Font/ARCADE.TTF", 80, {150, 0, 0});
+  mPauseText->Parent(this);
+  mPauseText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
+                          Graphics::Instance()->SCREEN_HEIGHT * 0.4f));
+
+  mPauseDetailText =
+      new Texture("PRESS ESC TO CONTINUE", "Font/ARCADE.TTF", 32, {150, 0, 0});
+  mPauseDetailText->Parent(mPauseText);
+  mPauseDetailText->Pos(Vector2(0.0f, 80.0f));
+
   mGameOverText1 = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
   // set position of mGameOverText1 to bottom center of the screen
   mGameOverText1->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
@@ -64,6 +74,15 @@ PlayScreen::~PlayScreen() {
 
   delete mGameOverText2;
   mGameOverText2 = NULL;
+
+  delete mYouWinText;
+  mYouWinText = NULL;
+
+  delete mPauseDetailText;
+  mPauseDetailText = NULL;
+
+  delete mPauseText;
+  mPauseText = NULL;
 }
 
 void PlayScreen::StartNewGame(bool isTraining) {
@@ -77,12 +96,13 @@ void PlayScreen::StartNewGame(bool isTraining) {
   mPlayers.clear();
 
   if (mIsTraining) {
-    mPlayer[0] = new Player(true, BASE_POSITION::bottomLeft, COLOR::red);
+    mPlayer[0] =
+        new Player(true, BASE_POSITION::bottomLeft, COLOR::red, false, true);
     mPlayers[mClient->get_username()] = mPlayer[0];
 
     for (int i = 1; i < 4; i++)
       mPlayer[i] = new Player(false, static_cast<BASE_POSITION>(i),
-                              static_cast<COLOR>(i + 1), true);
+                              static_cast<COLOR>(i + 1), true, false);
 
     mGameMap->SetMapChoice(1);
   } else {
@@ -91,7 +111,8 @@ void PlayScreen::StartNewGame(bool isTraining) {
           mClient->get_current_room()->players[i].username ==
               mClient->get_username(),
           static_cast<BASE_POSITION>(i),
-          static_cast<COLOR>(mClient->get_current_room()->players[i].tank));
+          static_cast<COLOR>(mClient->get_current_room()->players[i].tank),
+          false, mClient->get_current_room()->players[i].is_leader);
 
       mPlayers[mClient->get_current_room()->players[i].username] = mPlayer[i];
     }
@@ -133,6 +154,8 @@ void PlayScreen::Update() {
       mPlayer[i]->Update();
     }
   }
+
+  if (mClient->is_game_paused) return;
 
   int alive = 0;
   int thisPlayer = 0;
@@ -177,12 +200,10 @@ void PlayScreen::LateUpdate() {
 }
 
 void PlayScreen::Render() {
-  mGameMap->Render();
-
-  for (int i = 0; i < 4; i++) {
-    if (mPlayer[i] != NULL) {
-      mPlayer[i]->Render();
-    }
+  if (!mGameOver && mClient->is_game_paused) {
+    mPauseText->Render();
+    mPauseDetailText->Render();
+    return;
   }
 
   if (mGameOver) {
@@ -192,5 +213,14 @@ void PlayScreen::Render() {
       mGameOverText1->Render();
 
     mGameOverText2->Render();
+    return;
+  }
+
+  mGameMap->Render();
+
+  for (int i = 0; i < 4; i++) {
+    if (mPlayer[i] != NULL) {
+      mPlayer[i]->Render();
+    }
   }
 }

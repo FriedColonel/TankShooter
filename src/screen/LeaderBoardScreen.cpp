@@ -17,8 +17,6 @@ void LeaderBoardScreen::Release() {
 LeaderBoardScreen::LeaderBoardScreen() : GameEntity() {
   mClient = TSS::Client::Instance();
 
-  // mClient->get_leaderboard();
-
   mIsPlayerTop5 = false;
 
   mTitle = new Texture("LEADERBOARD", "Font/ARCADE.TTF", 80, {150, 0, 0});
@@ -31,7 +29,7 @@ LeaderBoardScreen::LeaderBoardScreen() : GameEntity() {
   mRankingsContainer->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                                   Graphics::Instance()->SCREEN_HEIGHT * 0.4f));
 
-  mThreeDot = new Texture("...", "Font/ARCADE.TTF", 50, {150, 0, 0});
+  mThreeDot = new Texture("...", "Font/ARCADE.TTF", 32, {150, 0, 0});
   mThreeDot->Parent(mRankingsContainer);
   mThreeDot->Pos(Vector2(0.0f, 4 * 100.0f));
 
@@ -57,9 +55,9 @@ LeaderBoardScreen::~LeaderBoardScreen() {
   mRankingsContainer = NULL;
 }
 
-void LeaderBoardScreen::Update() {
-  printf("LeaderBoardScreen::Update()\n");
+void LeaderBoardScreen::Update() {}
 
+void LeaderBoardScreen::UpdateRankings() {
   if (mClient->leaderboard) {
     TSS::LinkedList* leaderboard = mClient->leaderboard;
     for (int i = 0; i < 5; i++) {
@@ -72,29 +70,45 @@ void LeaderBoardScreen::Update() {
     int count = 0;
 
     for (int i = 0; count < 5 && i < mClient->leaderboard->length; i++) {
-      TSS::Player* player = (TSS::Player*)mClient->leaderboard->retrieve(i);
+      TSS::TopUser* player = (TSS::TopUser*)mClient->leaderboard->retrieve(i);
 
-      if (player->username == mClient->get_username()) mIsPlayerTop5 = true;
+      if (player->username == mClient->get_username()) {
+        if (i < 5) mIsPlayerTop5 = true;
+      }
 
-      if (i > 4 && !mIsPlayerTop5 &&
+      if (i > 3 && !mIsPlayerTop5 &&
           player->username != mClient->get_username())
         continue;
 
-      mRankings[i] = new LeaderBoardPlayer(player->username, player->points, i);
-      mRankings[i]->Parent(mRankingsContainer);
-      mRankings[i]->Pos(Vector2(0.0f, (count + !mIsPlayerTop5) * 100.0f));
+      mRankings[count] =
+          new LeaderBoardPlayer(player->username, player->points, i);
+      mRankings[count]->Parent(mRankingsContainer);
+      mRankings[count]->Pos(Vector2(0.0f, count * 100.0f));
 
       count++;
+    }
+
+    if (!mIsPlayerTop5) {
+      mRankings[4]->Pos(Vector2(0.0f, 5 * 100.0f));
     }
   }
 }
 
 void LeaderBoardScreen::Render() {
-  for (int i = 0; i < 5; i++) {
+  mTitle->Render();
+
+  for (int i = 0; i < 4; i++) {
     if (mRankings[i] != NULL) mRankings[i]->Render();
   }
 
-  if (!mIsPlayerTop5) mThreeDot->Render();
+  if (!mIsPlayerTop5) {
+    mThreeDot->Render();
+    if (mRankings[4] != NULL) {
+      mRankings[4]->Render();
+    };
+  } else {
+    if (mRankings[4] != NULL) mRankings[4]->Render();
+  }
 }
 
 // =============LEADERBOARDPLAYER================
@@ -103,11 +117,13 @@ LeaderBoardPlayer::LeaderBoardPlayer(std::string name, int score, int rank)
   std::string rank_str = rank == 0   ? "1ST"
                          : rank == 1 ? "2ND"
                          : rank == 2 ? "3RD"
-                                     : std::to_string(rank) + "TH";
+                                     : std::to_string(rank + 1) + "TH";
 
-  mRankText = new Texture(rank_str, "Font/ARCADE.TTF", 50, {150, 0, 0});
+  mRankText = new Texture(rank_str, "Font/ARCADE.TTF", 32, {150, 0, 0});
   mRankText->Parent(this);
   mRankText->Pos(Vector2(300.0f, 0.0f));
 
   mScoreText->Pos(Vector2(150.0f, 0.0f));
+
+  mTank->Pos(Vector2(-300.0f, 0.0f));
 }

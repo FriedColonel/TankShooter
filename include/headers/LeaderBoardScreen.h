@@ -30,6 +30,8 @@ class LeaderBoardScreen : public GameEntity {
   void Update();
   void Render();
 
+  void UpdateRankings();
+
  private:
   LeaderBoardScreen();
   ~LeaderBoardScreen();

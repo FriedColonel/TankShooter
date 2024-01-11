@@ -9,21 +9,25 @@
 #include <headers/Bullet.h>
 #include <headers/PhysicEntity.h>
 
+#include <socket/Client.hpp>
+
 using namespace QuickSDL;
 
 class Player : public GameEntity {
  private:
   Timer* mTimer;
   InputManager* mInput;
+  TSS::Client* mClient;
 
   bool mAlive;
   bool mThisPlayer;
+  bool mIsLeader;
 
   Base* mBase;
 
  public:
   Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color,
-         bool isBot = false);
+         bool isBot = false, bool isLeader = false);
   ~Player();
 
   void Alive(bool alive);

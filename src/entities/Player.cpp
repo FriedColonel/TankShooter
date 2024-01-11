@@ -6,12 +6,14 @@
 #include <iostream>
 
 Player::Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color,
-               bool isBot) {
+               bool isBot, bool isLeader) {
   mTimer = Timer::Instance();
   mInput = InputManager::Instance();
+  mClient = TSS::Client::Instance();
 
   mAlive = true;
   mThisPlayer = isThisPlayer;
+  mIsLeader = isLeader;
 
   mBase = new Base(basePos, isThisPlayer, color, isBot);
 
@@ -21,6 +23,7 @@ Player::Player(bool isThisPlayer, BASE_POSITION basePos, COLOR color,
 Player::~Player() {
   mTimer = NULL;
   mInput = NULL;
+  mClient = NULL;
 
   delete mBase;
   mBase = NULL;
@@ -48,9 +51,22 @@ void Player::Update() {
     mAlive = false;
   }
 
+  if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE))
+    if (mIsLeader)
+      if (!mClient->is_game_paused)
+        mClient->pause_game();
+      else
+        mClient->resume_game();
+
+  if (mClient->is_game_paused) return;
+
   mBase->Update();
 }
 
-void Player::LateUpdate() { mBase->mTank->LateUpdate(); }
+void Player::LateUpdate() {
+  if (mClient->is_game_paused) return;
+
+  mBase->mTank->LateUpdate();
+}
 
 void Player::Render() { mBase->Render(); }

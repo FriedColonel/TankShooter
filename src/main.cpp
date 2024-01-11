@@ -20,7 +20,7 @@ int main(int argc, char const *argv[]) {
   }
 
   TSS::Client *client = TSS::Client::Instance(atoi(argv[2]), (char *)argv[1]);
-  // TSS::Client *client = TSS::Client::Instance(5501, "127.0.0.1");
+  // TSS::Client *client = TSS::Client::Instance(5500, "127.0.0.1");
   client->auth_menu();
 
   QuickSDL::GameManager *game = QuickSDL::GameManager::Instance();
@@ -103,6 +103,8 @@ void *auto_recv_message() {
         event_name == "game:game_end:success") {
       Room *room = json_to_room(string_to_json(data));
       client->set_current_room(room);
+
+      client->is_game_paused = room->status == 3;
 
       int alive_count = 0;
       for (int i = 0; i < room->players.size(); i++)

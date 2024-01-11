@@ -73,6 +73,9 @@ void ScreenManager::Update() {
           mCurrentScreen = play;
         } else if (mStartScreen->SelectedMode() == leaderBoard) {
           mClient->get_leaderboard();
+          while (mClient->leaderboard == NULL)
+            ;
+          mLeaderBoardScreen->UpdateRankings();
           mCurrentScreen = leaderBoard;
         }
       }
@@ -142,9 +145,6 @@ void ScreenManager::Update() {
             mClient->leave_room();
           }
         }
-      } else if (mInput->KeyPressed(SDL_SCANCODE_ESCAPE)) {
-        mCurrentScreen = start;
-        mClient->leave_room();
       }
       break;
 

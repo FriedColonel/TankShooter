@@ -71,7 +71,7 @@ void ResultScreen::UpdatePlayerRanking() {
 // ============PlayerRanking================
 PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
     : GameEntity() {
-  mTank = new GameEntity();
+  mTank = new GameEntity(Vector2(-250.0f, 0.0f));
   mTank->Parent(this);
 
   mBase = new AnimatedTexture(
@@ -79,7 +79,7 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
       Graphics::Instance()->CELL_SIZE, Graphics::Instance()->CELL_SIZE, 2, 0.2f,
       AnimatedTexture::horizontal);
   mBase->Parent(mTank);
-  mBase->Pos(Vector2(-250.0f, 0.0f));
+  mBase->Pos(VEC2_ZERO);
   mBase->Scale(Vector2(0.7f, 0.7f));
 
   mWeapon = new AnimatedTexture(
@@ -88,7 +88,7 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
       AnimatedTexture::horizontal);
   mWeapon->WrapMode(AnimatedTexture::once);
   mWeapon->Parent(mTank);
-  mWeapon->Pos(Vector2(-250.0f, 0.0f));
+  mWeapon->Pos(VEC2_ZERO);
   mWeapon->Scale(Vector2(0.7f, 0.7f));
 
   mNameText = new Texture(name, "Font/ARCADE.TTF", 32, {255, 255, 255});

@@ -27,6 +27,8 @@ class PlayScreen : public GameEntity {
   bool mGameOverSent;
   bool mIsTraining;
 
+  Texture* mPauseText;
+  Texture* mPauseDetailText;
   Texture* mGameOverText1;
   Texture* mGameOverText2;
   Texture* mYouWinText;

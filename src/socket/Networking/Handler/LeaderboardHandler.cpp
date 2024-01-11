@@ -13,6 +13,8 @@ std::string TSS::LeaderboardHandler::get_leaderboard(LinkedList *users) {
     return "";
   }
 
+  leaderboard = new LinkedList();
+
   for (int i = 0; i < users->length; i++) {
     TopUser *top_user = new TopUser();
 
