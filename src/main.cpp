@@ -108,7 +108,7 @@ void *auto_recv_message() {
 
       int alive_count = 0;
       for (int i = 0; i < room->players.size(); i++)
-        if (room->players[i].status == 1) alive_count++;
+        if (room->players[i].status != 3) alive_count++;
 
       client->alive_players = alive_count;
 

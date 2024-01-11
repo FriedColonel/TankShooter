@@ -27,15 +27,15 @@ namespace QuickSDL {
 class Graphics {
  public:
   // The Width of the game's window
-  const int SCREEN_WIDTH = 1920;
+  const int SCREEN_WIDTH = 960;
   // The Height of the game's window
-  const int SCREEN_HEIGHT = 1024;
+  const int SCREEN_HEIGHT = 512;
   // The title of the game's window
   const char* WINDOW_TITLE = "QuickSDL";
   // Cell size used for image
   const int CELL_SIZE = 128;
   // Cell size used for the map
-  const int MAP_CELL_SIZE = 64;
+  const int MAP_CELL_SIZE = 32;
 
  private:
   // Needed to make GameManager a singleton class

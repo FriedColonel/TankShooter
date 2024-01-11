@@ -17,7 +17,7 @@ void MapChooseScreen::Release() {
 MapChooseScreen::MapChooseScreen() {
   mInput = InputManager::Instance();
 
-  mTitle = new Texture("Choose Map", "Font/ARCADE.TTF", 60, {150, 0, 0});
+  mTitle = new Texture("Choose Map", "Font/ARCADE.TTF", 30, {150, 0, 0});
   mTitle->Parent(this);
   mTitle->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                       Graphics::Instance()->SCREEN_HEIGHT * 0.1f));
@@ -27,44 +27,45 @@ MapChooseScreen::MapChooseScreen() {
                              Graphics::Instance()->SCREEN_HEIGHT * 0.6f));
   mChooseBox->Parent(this);
 
-  mMap1Title = new Texture("Map 1", "Font/ARCADE.TTF", 32, {150, 0, 0});
+  mMap1Title = new Texture("Map 1", "Font/ARCADE.TTF", 16, {150, 0, 0});
   mMap1Title->Parent(mChooseBox);
-  mMap1Title->Pos(Vector2(-512.0f, 0.0f));
+  mMap1Title->Pos(Vector2(-256.0f, 0.0f));
 
   mMap1 = new Texture("Map/map1.jpg");
   mMap1->Parent(mMap1Title);
-  mMap1->Scale(Vector2(0.2f, 0.2f));
-  mMap1->Pos(Vector2(0.0f, -128.0f));
+  mMap1->Scale(Vector2(0.1f, 0.1f));
+  mMap1->Pos(Vector2(0.0f, -64.0f));
 
-  mMap2Title = new Texture("Map 2", "Font/ARCADE.TTF", 32, {150, 0, 0});
+  mMap2Title = new Texture("Map 2", "Font/ARCADE.TTF", 16, {150, 0, 0});
   mMap2Title->Parent(mChooseBox);
   mMap2Title->Pos(Vector2(0.0f, 0.0f));
 
   mMap2 = new Texture("Map/map2.jpg");
   mMap2->Parent(mMap2Title);
-  mMap2->Scale(Vector2(0.2f, 0.2f));
-  mMap2->Pos(Vector2(0.0f, -128.0f));
+  mMap2->Scale(Vector2(0.1f, 0.1f));
+  mMap2->Pos(Vector2(0.0f, -64.0f));
 
-  mMap3Title = new Texture("Map 3", "Font/ARCADE.TTF", 32, {150, 0, 0});
+  mMap3Title = new Texture("Map 3", "Font/ARCADE.TTF", 16, {150, 0, 0});
   mMap3Title->Parent(mChooseBox);
-  mMap3Title->Pos(Vector2(512.0f, 0.0f));
+  mMap3Title->Pos(Vector2(256.0f, 0.0f));
 
   mMap3 = new Texture("Map/map3.jpg");
   mMap3->Parent(mMap3Title);
-  mMap3->Scale(Vector2(0.2f, 0.2f));
-  mMap3->Pos(Vector2(0.0f, -128.0f));
+  mMap3->Scale(Vector2(0.1f, 0.1f));
+  mMap3->Pos(Vector2(0.0f, -64.0f));
 
   mSelectedMap = 1;
 
   mCursor = new Texture("Cursor/cursor.png");
   mCursor->Parent(mChooseBox);
-  mCursor->Pos(Vector2(-512.0f, -300.0f));
+  mCursor->Pos(Vector2(-256.0f, -150.0f));
+  mCursor->Scale(Vector2(0.5f, 0.5f));
   mCursor->Rotate(90.0f);
-  mCursorStartPos = Vector2(-512.0f, -300.0f);
-  mCursorOffset = 512;
+  mCursorStartPos = Vector2(-256.0f, -150.0f);
+  mCursorOffset = 256;
 
   mInstructions = new Texture("Press Enter to select map", "Font/ARCADE.TTF",
-                              32, {150, 0, 0});
+                              16, {150, 0, 0});
   mInstructions->Parent(this);
   mInstructions->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                              Graphics::Instance()->SCREEN_HEIGHT * 0.8f));

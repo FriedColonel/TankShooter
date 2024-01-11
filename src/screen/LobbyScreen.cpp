@@ -20,14 +20,14 @@ LobbyScreen::LobbyScreen() {
 
   mClient = TSS::Client::Instance();
 
-  mTitle = new Texture("LOBBY", "Font/ARCADE.TTF", 80, {150, 0, 0});
+  mTitle = new Texture("LOBBY", "Font/ARCADE.TTF", 40, {150, 0, 0});
   mTitle->Parent(this);
-  mTitle->Pos(Vector2(0.0f, 70.0f));
+  mTitle->Pos(Vector2(0.0f, 35.0f));
 
   mInstruction = new Texture("Press SPACE to toggle ready", "Font/ARCADE.TTF",
-                             50, {150, 0, 0});
+                             25, {150, 0, 0});
   mInstruction->Parent(mTitle);
-  mInstruction->Pos(Vector2(0.0f, 100.0f));
+  mInstruction->Pos(Vector2(0.0f, 50.0f));
 
   mRoomCode = NULL;
 
@@ -101,7 +101,7 @@ void LobbyScreen::SetRoomCode(std::string code) {
   }
 
   mRoomCode =
-      new Texture("Room code: " + code, "Font/ARCADE.TTF", 40, {230, 230, 230});
+      new Texture("Room code: " + code, "Font/ARCADE.TTF", 20, {230, 230, 230});
   mRoomCode->Parent(this);
-  mRoomCode->Pos(Vector2(0.0f, 300.0f));
+  mRoomCode->Pos(Vector2(0.0f, 150.0f));
 }

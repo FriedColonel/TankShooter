@@ -30,17 +30,22 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
 
   switch (basePos) {
     case topLeft:
-      Pos(Vector2(192.0f, mGraphics->MAP_CELL_SIZE));
+      Pos(Vector2(mGraphics->MAP_CELL_SIZE + mGraphics->CELL_SIZE * 0.5f,
+                  mGraphics->MAP_CELL_SIZE));
       break;
     case bottomLeft:
-      Pos(Vector2(192.0f, mGraphics->SCREEN_HEIGHT - mGraphics->MAP_CELL_SIZE));
+      Pos(Vector2(mGraphics->MAP_CELL_SIZE + mGraphics->CELL_SIZE * 0.5f,
+                  mGraphics->SCREEN_HEIGHT - mGraphics->MAP_CELL_SIZE));
       break;
     case bottomRight:
-      Pos(Vector2(mGraphics->SCREEN_WIDTH - 192.0f,
+      Pos(Vector2(mGraphics->SCREEN_WIDTH -
+                      (mGraphics->MAP_CELL_SIZE + mGraphics->CELL_SIZE * 0.5f),
                   mGraphics->SCREEN_HEIGHT - mGraphics->MAP_CELL_SIZE));
       break;
     case topRight:
-      Pos(Vector2(mGraphics->SCREEN_WIDTH - 192.0f, mGraphics->MAP_CELL_SIZE));
+      Pos(Vector2(mGraphics->SCREEN_WIDTH -
+                      (mGraphics->MAP_CELL_SIZE + mGraphics->CELL_SIZE * 0.5f),
+                  mGraphics->MAP_CELL_SIZE));
       break;
   }
 
@@ -49,6 +54,7 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
       Graphics::Instance()->CELL_SIZE, Graphics::Instance()->CELL_SIZE, 2, 0.2f,
       AnimatedTexture::horizontal);
   mBase->Parent(this);
+  mBase->Scale(Vector2(0.5f, 0.5f));
   mBase->Pos(VEC2_ZERO);
 
   mWeapon = new AnimatedTexture(
@@ -57,19 +63,21 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
       AnimatedTexture::horizontal);
   mWeapon->WrapMode(AnimatedTexture::once);
   mWeapon->Parent(this);
+  mWeapon->Scale(Vector2(0.5f, 0.5f));
   mWeapon->Pos(VEC2_ZERO);
 
   mDeathAnimation =
       new AnimatedTexture("Explosion/explosion.png", 0, 0, 256, 256, 8, 0.68f,
                           AnimatedTexture::horizontal);
-  mDeathAnimation->Scale(Vector2(0.5f, 0.5f));
+  mDeathAnimation->Scale(Vector2(mGraphics->MAP_CELL_SIZE / 256.0f,
+                                 mGraphics->MAP_CELL_SIZE / 256.0f));
   mDeathAnimation->Parent(this);
   mDeathAnimation->Pos(VEC2_ZERO);
   mDeathAnimation->WrapMode(AnimatedTexture::once);
 
-  mMoveSpeed = 100.0f;
-  mMoveBoundsX = Vector2(50, Graphics::Instance()->SCREEN_WIDTH - 50);
-  mMoveBoundsY = Vector2(50, Graphics::Instance()->SCREEN_HEIGHT - 50);
+  mMoveSpeed = 50.0f;
+  mMoveBoundsX = Vector2(10, Graphics::Instance()->SCREEN_WIDTH - 10);
+  mMoveBoundsY = Vector2(10, Graphics::Instance()->SCREEN_HEIGHT - 10);
 
   mDirection = DIRECTION::up;
   mFireDirection = DIRECTION::up;
@@ -82,7 +90,7 @@ Tank::Tank(bool isThisPlayer, BASE_POSITION basePos, COLOR color)
     }
   }
 
-  AddCollider(new BoxCollider(Vector2(64.0f, 90.0f)), Vector2(0.0f, -5.0f));
+  AddCollider(new BoxCollider(Vector2(32.0f, 40.0f)));
 }
 
 Tank::~Tank() {
@@ -168,20 +176,34 @@ void Tank::Shoot() {
       mAnimating = true;
       switch (mFireDirection) {
         case up:
-          mBullets[i]->Fire(Pos() - Vector2(0.0f, 64.0f), mFireDirection);
-          mClient->shot_bullet(Pos().x, Pos().y - 64.0f, mFireDirection);
+          mBullets[i]->Fire(
+              Pos() - Vector2(0.0f, Graphics::Instance()->MAP_CELL_SIZE),
+              mFireDirection);
+          mClient->shot_bullet(Pos().x,
+                               Pos().y - Graphics::Instance()->MAP_CELL_SIZE,
+                               mFireDirection);
           break;
         case down:
-          mBullets[i]->Fire(Pos() + Vector2(0.0f, 64.0f), mFireDirection);
-          mClient->shot_bullet(Pos().x, Pos().y + 64.0f, mFireDirection);
+          mBullets[i]->Fire(
+              Pos() + Vector2(0.0f, Graphics::Instance()->MAP_CELL_SIZE),
+              mFireDirection);
+          mClient->shot_bullet(Pos().x,
+                               Pos().y + Graphics::Instance()->MAP_CELL_SIZE,
+                               mFireDirection);
           break;
         case left:
-          mBullets[i]->Fire(Pos() - Vector2(64.0f, 0.0f), mFireDirection);
-          mClient->shot_bullet(Pos().x - 64.0f, Pos().y, mFireDirection);
+          mBullets[i]->Fire(
+              Pos() - Vector2(Graphics::Instance()->MAP_CELL_SIZE, 0.0f),
+              mFireDirection);
+          mClient->shot_bullet(Pos().x - Graphics::Instance()->MAP_CELL_SIZE,
+                               Pos().y, mFireDirection);
           break;
         case right:
-          mBullets[i]->Fire(Pos() + Vector2(64.0f, 0.0f), mFireDirection);
-          mClient->shot_bullet(Pos().x + 64.0f, Pos().y, mFireDirection);
+          mBullets[i]->Fire(
+              Pos() + Vector2(Graphics::Instance()->MAP_CELL_SIZE, 0.0f),
+              mFireDirection);
+          mClient->shot_bullet(Pos().x + Graphics::Instance()->MAP_CELL_SIZE,
+                               Pos().y, mFireDirection);
           break;
       }
       break;

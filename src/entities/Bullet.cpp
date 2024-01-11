@@ -8,10 +8,11 @@ Bullet::Bullet(bool isFriendly) : PhysicEntity() {
   mTexture = new AnimatedTexture("Bullet/bullet.png", 11 * 32, 0, 32, 32, 4,
                                  0.2f, AnimatedTexture::horizontal);
   mTexture->Parent(this);
+  mTexture->Scale(Vector2(0.25f, 0.25f));
   mTexture->Pos(VEC2_ZERO);
   mTexture->WrapMode(AnimatedTexture::loop);
 
-  mSpeed = 500.0f;
+  mSpeed = 250.0f;
 
   mDirection = up;
 

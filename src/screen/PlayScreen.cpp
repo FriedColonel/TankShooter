@@ -24,29 +24,29 @@ PlayScreen::PlayScreen() {
   mGameOverSent = false;
   mIsTraining = false;
 
-  mPauseText = new Texture("PAUSED", "Font/ARCADE.TTF", 80, {150, 0, 0});
+  mPauseText = new Texture("PAUSED", "Font/ARCADE.TTF", 40, {150, 0, 0});
   mPauseText->Parent(this);
   mPauseText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                           Graphics::Instance()->SCREEN_HEIGHT * 0.4f));
 
   mPauseDetailText =
-      new Texture("PRESS ESC TO CONTINUE", "Font/ARCADE.TTF", 32, {150, 0, 0});
+      new Texture("PRESS ESC TO CONTINUE", "Font/ARCADE.TTF", 16, {150, 0, 0});
   mPauseDetailText->Parent(mPauseText);
-  mPauseDetailText->Pos(Vector2(0.0f, 80.0f));
+  mPauseDetailText->Pos(Vector2(0.0f, 40.0f));
 
-  mGameOverText1 = new Texture("GAME OVER", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  mGameOverText1 = new Texture("GAME OVER", "Font/ARCADE.TTF", 25, {255, 0, 0});
   // set position of mGameOverText1 to bottom center of the screen
   mGameOverText1->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                               Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
 
-  mYouWinText = new Texture("YOU WIN", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  mYouWinText = new Texture("YOU WIN", "Font/ARCADE.TTF", 25, {255, 0, 0});
   mYouWinText->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                            Graphics::Instance()->SCREEN_HEIGHT * 1.2f));
 
-  mGameOverText2 = new Texture("PRESS ENTER TO CONTINUE", "Font/ARCADE.TTF", 32,
+  mGameOverText2 = new Texture("PRESS ENTER TO CONTINUE", "Font/ARCADE.TTF", 16,
                                {150, 0, 0});
   mGameOverText2->Parent(mGameOverText1);
-  mGameOverText2->Pos(Vector2(0.0f, 40.0f));
+  mGameOverText2->Pos(Vector2(0.0f, 20.0f));
 
   for (int i = 0; i < 4; i++) {
     mPlayer[i] = NULL;

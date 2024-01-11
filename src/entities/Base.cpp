@@ -28,6 +28,7 @@ Base::Base(BASE_POSITION basePos, bool isThisPlayer, COLOR color, bool isBot) {
 
   mTexture = new Texture("Base/eagle.png", 0, 0, 60, 60);
   mTexture->Parent(this);
+  mTexture->Scale(Vector2(0.5f, 0.5f));
   AddCollider(new BoxCollider(mTexture->ScaledDimensions()));
 
   mDeathAnimation =
