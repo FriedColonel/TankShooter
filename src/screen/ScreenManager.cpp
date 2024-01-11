@@ -72,6 +72,7 @@ void ScreenManager::Update() {
           mPlayScreen->StartNewGame(true);
           mCurrentScreen = play;
         } else if (mStartScreen->SelectedMode() == leaderBoard) {
+          mClient->get_leaderboard();
           mCurrentScreen = leaderBoard;
         }
       }

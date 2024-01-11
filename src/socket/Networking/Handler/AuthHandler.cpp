@@ -2,7 +2,6 @@
 
 TSS::AuthHandler::AuthHandler(std::mutex *user_mutex, LinkedList *users,
                               LinkedList *online_users) {
-  users = new LinkedList();
   this->users = users;
   this->online_users = online_users;
   this->user_mutex = user_mutex;
@@ -29,6 +28,8 @@ void TSS::AuthHandler::load_users() {
 
     users->insert(0, user, sizeof(struct User));
   }
+
+  std::cout << "Loaded users: " << users->length << std::endl;
 }
 
 void TSS::AuthHandler::update_auth_status(std::string founed_username,

@@ -18,18 +18,22 @@ class AuthHandler {
  private:
   std::mutex *user_mutex;
 
-  LinkedList *users;
   LinkedList *online_users;
   char saved_account_path[256] = "../.data/account.txt";
 
   static int compare(void *a, void *b);
-  void load_users();
   void print_users();
   void update_auth_status(std::string founed_username, bool is_login);
 
  public:
+  LinkedList *users;
+
+ public:
   AuthHandler(std::mutex *user_mutex, LinkedList *users,
               LinkedList *online_users);
+
+  void load_users();
+
   // return
   // -1: User not found, 1: User found, 0: Password incorrect, 2: User is login
   int check_user(std::string username, std::string password, int client_socket);

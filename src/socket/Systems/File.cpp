@@ -38,7 +38,7 @@ void TSS::append_file(char *path, void *data, unsigned long size) {
 std::vector<std::string> TSS::read_file(char *path) {
   std::vector<std::string> lines;
 
-  FILE *file = fopen(path, "r");
+  FILE *file = fopen(path, "r+");
   if (file == NULL) {
     printf("Error: file not found %s\n", path);
     return lines;

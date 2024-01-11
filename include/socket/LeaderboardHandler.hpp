@@ -28,7 +28,7 @@ class LeaderboardHandler {
   // Constructor
   LeaderboardHandler(std::mutex *user_mutex, LinkedList *users);
   // Get leaderboard
-  std::string get_leaderboard();
+  std::string get_leaderboard(LinkedList *users);
 
   // compare function for sorting leaderboard by points
 };

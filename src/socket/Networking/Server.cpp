@@ -353,8 +353,11 @@ void TSS::Server::handle_leaderboard(int client_socket) {
   char *action = strtok(NULL, ":");
 
   if (strcmp(action, "get") == 0) {
-    std::string result = make_response("leaderboard:get",
-                                       leaderboard_handler->get_leaderboard());
+    auth_handler->load_users();
+
+    std::string result = make_response(
+        "leaderboard:get",
+        leaderboard_handler->get_leaderboard(auth_handler->users));
 
     responder(client_socket, result);
   }

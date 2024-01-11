@@ -4,10 +4,15 @@ TSS::LeaderboardHandler::LeaderboardHandler(std::mutex *user_mutex,
                                             LinkedList *users) {
   this->user_mutex = user_mutex;
   this->users = users;
+
+  leaderboard = new LinkedList();
 }
 
-std::string TSS::LeaderboardHandler::get_leaderboard() {
-  std::cout << "Getting leaderboard " << users->length << std::endl;
+std::string TSS::LeaderboardHandler::get_leaderboard(LinkedList *users) {
+  if (users->length == 0) {
+    return "";
+  }
+
   for (int i = 0; i < users->length; i++) {
     TopUser *top_user = new TopUser();
 
@@ -33,7 +38,7 @@ std::string TSS::LeaderboardHandler::get_leaderboard() {
 
     top_user->username = user->username;
     top_user->points = total_point;
-    top_user->room_id = "****";
+    top_user->room_id = "null";
 
     leaderboard->insert(0, top_user, sizeof(struct TopUser));
   }

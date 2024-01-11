@@ -17,7 +17,7 @@ void LeaderBoardScreen::Release() {
 LeaderBoardScreen::LeaderBoardScreen() : GameEntity() {
   mClient = TSS::Client::Instance();
 
-  mClient->get_leaderboard();
+  // mClient->get_leaderboard();
 
   mIsPlayerTop5 = false;
 
