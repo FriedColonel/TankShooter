@@ -203,6 +203,7 @@ void ScreenManager::Render() {
 
     case result:
       mResultScreen->Render();
+      break;
 
     case leaderBoard:
       mLeaderBoardScreen->Render();

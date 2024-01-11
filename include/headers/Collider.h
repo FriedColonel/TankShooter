@@ -13,7 +13,7 @@ class Collider : public GameEntity {
  protected:
   ColliderType mType;
 
-  static const bool DEBUG_COLLIDERS = false;
+  static const bool DEBUG_COLLIDERS = true;
   Texture* mDebugTexture;
 
  public:

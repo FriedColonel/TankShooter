@@ -21,16 +21,16 @@ StartScreen::StartScreen() {
   // Top bar entities
   mTopBar =
       new GameEntity(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f, 80.0f));
-  mPlayerOne = new Texture("1UP", "Font/ARCADE.TTF", 32, {150, 0, 0});
-  mHighScore = new Texture("HIGH SCORE", "Font/ARCADE.TTF", 32, {150, 0, 0});
-  mPlayerTwo = new Texture("2UP", "Font/ARCADE.TTF", 32, {150, 0, 0});
+  mPlayerOne = new Texture("1UP", "Font/ARCADE.TTF", 16, {150, 0, 0});
+  mHighScore = new Texture("HIGH SCORE", "Font/ARCADE.TTF", 16, {150, 0, 0});
+  mPlayerTwo = new Texture("2UP", "Font/ARCADE.TTF", 16, {150, 0, 0});
 
   mPlayerOne->Parent(mTopBar);
   mHighScore->Parent(mTopBar);
   mPlayerTwo->Parent(mTopBar);
 
   mPlayerOne->Pos(Vector2(-Graphics::Instance()->SCREEN_WIDTH * 0.35f, 0.0f));
-  mHighScore->Pos(Vector2(-32.0f, 0.0f));
+  mHighScore->Pos(Vector2(-16.0f, 0.0f));
   mPlayerTwo->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.2f, 0.0f));
 
   mTopBar->Parent(this);
@@ -41,14 +41,15 @@ StartScreen::StartScreen() {
                              Graphics::Instance()->SCREEN_HEIGHT * 0.6f));
 
   mLeaderBoardMode =
-      new Texture("LEADER BOARD", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("LEADER BOARD", "Font/ARCADE.TTF", 16, {230, 230, 230});
   mTrainingMode =
-      new Texture("TRAINING", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("TRAINING", "Font/ARCADE.TTF", 16, {230, 230, 230});
   mNewGameMode =
-      new Texture("NEW ROOM", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("NEW ROOM", "Font/ARCADE.TTF", 16, {230, 230, 230});
   mConnectGameMode =
-      new Texture("JOIN ROOM", "Font/ARCADE.TTF", 32, {230, 230, 230});
+      new Texture("JOIN ROOM", "Font/ARCADE.TTF", 16, {230, 230, 230});
   mCursor = new Texture("Cursor/cursor.png");
+  mCursor->Scale(Vector2(0.5f, 0.5f));
 
   mLeaderBoardMode->Parent(mPlayMode);
   mTrainingMode->Parent(mPlayMode);
@@ -56,16 +57,16 @@ StartScreen::StartScreen() {
   mConnectGameMode->Parent(mPlayMode);
   mCursor->Parent(mPlayMode);
 
-  mTrainingMode->Pos(Vector2(0.0f, 32.0f));
-  mNewGameMode->Pos(Vector2(0.0f, -96.0f));
-  mConnectGameMode->Pos(Vector2(0.0f, -32.0f));
-  mLeaderBoardMode->Pos(Vector2(0.0f, 96.0f));
-  mCursor->Pos(Vector2(-250.0f, -96.0f));
+  mTrainingMode->Pos(Vector2(0.0f, 16.0f));
+  mNewGameMode->Pos(Vector2(0.0f, -48.0f));
+  mConnectGameMode->Pos(Vector2(0.0f, -16.0f));
+  mLeaderBoardMode->Pos(Vector2(0.0f, 48.0f));
+  mCursor->Pos(Vector2(-125.0f, -48.0f));
 
   mPlayMode->Parent(this);
 
   mCursorStartPos = mCursor->Pos(local);
-  mCursorOffset = Vector2(0.0f, 64.0f);
+  mCursorOffset = Vector2(0.0f, 32.0f);
   mSelectedMode = 0;
 
   // game title
@@ -73,7 +74,7 @@ StartScreen::StartScreen() {
       new GameEntity(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                              Graphics::Instance()->SCREEN_HEIGHT * 0.3f));
 
-  mTitle = new Texture("TANK SHOOTER", "Font/ARCADE.TTF", 64, {150, 0, 0});
+  mTitle = new Texture("TANK SHOOTER", "Font/ARCADE.TTF", 32, {150, 0, 0});
 
   mTitle->Parent(mGameTitle);
   mTitle->Pos(VEC2_ZERO);

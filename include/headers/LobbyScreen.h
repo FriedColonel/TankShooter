@@ -32,11 +32,11 @@ class PlayerInfo : public GameEntity {
              int index, bool isReady = false, bool isLeader = false)
       : name(_name), color(_color), isThisPlayer(isThisPlayer) {
     Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
-                500.0f + index * 80.0f));
+                250.0f + index * 40.0f));
 
-    mPlayerName = new Texture(name, "Font/ARCADE.TTF", 40, {230, 230, 230});
+    mPlayerName = new Texture(name, "Font/ARCADE.TTF", 20, {230, 230, 230});
     mPlayerName->Parent(this);
-    mPlayerName->Pos(Vector2(-150.0f, 0.0f));
+    mPlayerName->Pos(Vector2(-75.0f, 0.0f));
 
     mIsReady = isReady;
     mIsLeader = isLeader;
@@ -46,8 +46,8 @@ class PlayerInfo : public GameEntity {
         Graphics::Instance()->CELL_SIZE, Graphics::Instance()->CELL_SIZE, 2,
         0.2f, AnimatedTexture::horizontal);
     mBase->Parent(this);
-    mBase->Pos(Vector2(150.0f, 0.0f));
-    mBase->Scale(Vector2(0.7f, 0.7f));
+    mBase->Pos(Vector2(75.0f, 0.0f));
+    mBase->Scale(Vector2(0.35f, 0.35f));
 
     mWeapon = new AnimatedTexture(
         "Tank/" + colorMap.at(color) + "/Weapons/turret_01_mk1.png", 0, 0,
@@ -55,18 +55,18 @@ class PlayerInfo : public GameEntity {
         0.7f, AnimatedTexture::horizontal);
     mWeapon->WrapMode(AnimatedTexture::once);
     mWeapon->Parent(this);
-    mWeapon->Pos(Vector2(150.0f, 0.0f));
-    mWeapon->Scale(Vector2(0.7f, 0.7f));
+    mWeapon->Pos(Vector2(75.0f, 0.0f));
+    mWeapon->Scale(Vector2(0.35f, 0.35f));
 
     mReady = new Texture("Check/check.jpg");
     mReady->Parent(this);
-    mReady->Pos(Vector2(300.0f, 0.0f));
-    mReady->Scale(Vector2(0.1f, 0.1f));
+    mReady->Pos(Vector2(150.0f, 0.0f));
+    mReady->Scale(Vector2(0.04f, 0.04f));
 
     mCrown = new Texture("Menu/queen-crown.png");
     mCrown->Parent(this);
-    mCrown->Pos(Vector2(-300.0f, 0.0f));
-    mCrown->Scale(Vector2(0.75f, 0.75f));
+    mCrown->Pos(Vector2(-150.0f, 0.0f));
+    mCrown->Scale(Vector2(0.35f, 0.35f));
   }
 
   ~PlayerInfo() {

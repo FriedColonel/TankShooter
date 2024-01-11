@@ -14,13 +14,15 @@ Brick::Brick() : PhysicEntity() {
   mTexture = new AnimatedTexture("Base/brick.png", 0, 0, 16, 16, 3, 1.0f,
                                  AnimatedTexture::horizontal);
   mTexture->Parent(this);
-  mTexture->Scale(Vector2(4.0f, 4.0f));
+  mTexture->Scale(Vector2(Graphics::Instance()->MAP_CELL_SIZE / 16,
+                          Graphics::Instance()->MAP_CELL_SIZE / 16));
 
   mDeathAnimation =
       new AnimatedTexture("Explosion/explosion.png", 0, 0, 256, 256, 8, 0.68f,
                           AnimatedTexture::horizontal);
   mDeathAnimation->Parent(this);
-  mDeathAnimation->Scale(Vector2(0.25f, 0.25f));
+  mDeathAnimation->Scale(Vector2(Graphics::Instance()->MAP_CELL_SIZE / 256,
+                                 Graphics::Instance()->MAP_CELL_SIZE / 256));
   mDeathAnimation->WrapMode(AnimatedTexture::once);
 
   AddCollider(new BoxCollider(mTexture->ScaledDimensions()));

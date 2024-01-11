@@ -16,7 +16,7 @@ void ResultScreen::Release() {
 ResultScreen::ResultScreen() : GameEntity() {
   mClient = TSS::Client::Instance();
 
-  mTitle = new Texture("RESULT", "Font/ARCADE.TTF", 50, {255, 0, 0});
+  mTitle = new Texture("RESULT", "Font/ARCADE.TTF", 25, {255, 0, 0});
   mTitle->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                       Graphics::Instance()->SCREEN_HEIGHT * 0.2f));
   mTitle->Parent(this);
@@ -64,7 +64,7 @@ void ResultScreen::UpdatePlayerRanking() {
         new PlayerRanking(room->players[i].username, room->players[i].points,
                           static_cast<COLOR>(room->players[i].tank));
     mPlayerRanking[i]->Parent(mPlayerRankingContainer);
-    mPlayerRanking[i]->Pos(Vector2(0.0f, i * 100));
+    mPlayerRanking[i]->Pos(Vector2(0.0f, i * 50));
   }
 }
 
@@ -80,7 +80,7 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
       AnimatedTexture::horizontal);
   mBase->Parent(mTank);
   mBase->Pos(VEC2_ZERO);
-  mBase->Scale(Vector2(0.7f, 0.7f));
+  mBase->Scale(Vector2(0.35f, 0.35f));
 
   mWeapon = new AnimatedTexture(
       "Tank/" + colorMap.at(color) + "/Weapons/turret_01_mk1.png", 0, 0,
@@ -89,25 +89,25 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
   mWeapon->WrapMode(AnimatedTexture::once);
   mWeapon->Parent(mTank);
   mWeapon->Pos(VEC2_ZERO);
-  mWeapon->Scale(Vector2(0.7f, 0.7f));
+  mWeapon->Scale(Vector2(0.35f, 0.35f));
 
-  mNameText = new Texture(name, "Font/ARCADE.TTF", 32, {255, 255, 255});
+  mNameText = new Texture(name, "Font/ARCADE.TTF", 16, {255, 255, 255});
   mNameText->Parent(this);
-  mNameText->Pos(Vector2(-50.0f, 0.0f));
+  mNameText->Pos(Vector2(-25.0f, 0.0f));
 
-  mScoreText = new Texture(std::to_string(score), "Font/ARCADE.TTF", 32,
+  mScoreText = new Texture(std::to_string(score), "Font/ARCADE.TTF", 16,
                            {255, 255, 255});
   mScoreText->Parent(this);
-  mScoreText->Pos(Vector2(100.0f, 0.0f));
+  mScoreText->Pos(Vector2(50.0f, 0.0f));
 
   std::string rankText = score == 8   ? "1st"
                          : score == 4 ? "2nd"
                          : score == 2 ? "3rd"
                                       : "4th";
 
-  mRankText = new Texture(rankText, "Font/ARCADE.TTF", 32, {255, 255, 255});
+  mRankText = new Texture(rankText, "Font/ARCADE.TTF", 16, {255, 255, 255});
   mRankText->Parent(this);
-  mRankText->Pos(Vector2(250.0f, 0.0f));
+  mRankText->Pos(Vector2(125.0f, 0.0f));
 }
 
 PlayerRanking::~PlayerRanking() {

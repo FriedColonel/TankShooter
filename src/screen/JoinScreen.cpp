@@ -28,9 +28,9 @@ JoinScreen::JoinScreen() {
   mTitleBar =
       new GameEntity(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                              Graphics::Instance()->SCREEN_HEIGHT * 0.1f));
-  mTitle = new Texture("ENTER ROOM CODE", "Font/ARCADE.TTF", 48, {150, 0, 0});
+  mTitle = new Texture("ENTER ROOM CODE", "Font/ARCADE.TTF", 24, {150, 0, 0});
   mTitle->Parent(mTitleBar);
-  mTitle->Pos(Vector2(0.0f, 0.0f));
+  mTitle->Pos(VEC2_ZERO);
 
   // input box
   mInputBox =
@@ -40,15 +40,15 @@ JoinScreen::JoinScreen() {
   mInputText = " ";
 
   mInputBoxLabel =
-      new Texture("ROOM CODE: ", "Font/ARCADE.TTF", 32, {255, 255, 255});
+      new Texture("ROOM CODE: ", "Font/ARCADE.TTF", 16, {255, 255, 255});
   mInputBoxLabel->Parent(mInputBox);
-  mInputBoxLabel->Pos(Vector2(-200.0f, 0.0f));
+  mInputBoxLabel->Pos(Vector2(-100.0f, 0.0f));
 
   // input text
   mInputBoxTexture =
-      new Texture(mInputText, "Font/ARCADE.TTF", 32, {255, 255, 255});
+      new Texture(mInputText, "Font/ARCADE.TTF", 16, {255, 255, 255});
   mInputBoxTexture->Parent(mInputBox);
-  mInputBoxTexture->Pos(Vector2(100.0f, 0.0f));
+  mInputBoxTexture->Pos(Vector2(50.0f, 0.0f));
 
   for (int i = 0; i < 5; i++) {
     mRoomList[i] = NULL;
@@ -56,6 +56,7 @@ JoinScreen::JoinScreen() {
 
   mCursor = new Texture("Cursor/cursor.png");
   mCursor->Parent(this);
+  mCursor->Scale(Vector2(0.5f, 0.5f));
 
   mSelectedRoom = -1;
 
@@ -126,7 +127,7 @@ void JoinScreen::Update() {
 
   if (mSelectedRoom != -1) mCursor->Parent(mRoomList[mSelectedRoom]);
 
-  mCursor->Pos(Vector2(-400.0f, 0.0f));
+  mCursor->Pos(Vector2(-200.0f, 0.0f));
 }
 
 void JoinScreen::UpdateRoomList() {
@@ -167,7 +168,7 @@ void JoinScreen::UpdateRoomList() {
       mRoomList[count]->Parent(this);
       mRoomList[count]->Pos(Vector2(
           Graphics::Instance()->SCREEN_WIDTH * 0.5f,
-          Graphics::Instance()->SCREEN_HEIGHT * 0.5f + (count * 100.0f)));
+          Graphics::Instance()->SCREEN_HEIGHT * 0.5f + (count * 50.0f)));
 
       count++;
     }
@@ -222,9 +223,9 @@ void JoinScreen::UpdateInputText(char c) {
   }
 
   mInputBoxTexture =
-      new Texture(mInputText, "Font/ARCADE.TTF", 32, {255, 255, 255});
+      new Texture(mInputText, "Font/ARCADE.TTF", 16, {255, 255, 255});
   mInputBoxTexture->Parent(mInputBox);
-  mInputBoxTexture->Pos(Vector2(100.0f, 0.0f));
+  mInputBoxTexture->Pos(Vector2(50.0f, 0.0f));
 }
 
 void JoinScreen::Render() {
@@ -253,26 +254,26 @@ RoomInfo::RoomInfo(std::string code, int playerCount, Status status)
   mCount = playerCount;
   mStatus = status;
 
-  mCode = new Texture(mRoomCode, "Font/ARCADE.TTF", 32, {255, 255, 255});
+  mCode = new Texture(mRoomCode, "Font/ARCADE.TTF", 16, {255, 255, 255});
 
   mPlayerCount = new Texture(std::to_string(playerCount) + "/4",
-                             "Font/ARCADE.TTF", 32, {255, 255, 255});
+                             "Font/ARCADE.TTF", 16, {255, 255, 255});
 
   switch (status) {
     case RoomInfo::Status::WAITING:
       mStatusText = new Texture("Menu/waiting.png");
       mStatusTexture =
-          new Texture("waiting", "Font/ARCADE.TTF", 32, {255, 255, 255});
+          new Texture("waiting", "Font/ARCADE.TTF", 16, {255, 255, 255});
       break;
     case RoomInfo::Status::FULL:
       mStatusText = new Texture("Menu/full.png");
       mStatusTexture =
-          new Texture("full", "Font/ARCADE.TTF", 32, {255, 255, 255});
+          new Texture("full", "Font/ARCADE.TTF", 16, {255, 255, 255});
       break;
     case RoomInfo::Status::STARTED:
       mStatusText = new Texture("Menu/playing.png");
       mStatusTexture =
-          new Texture("playing", "Font/ARCADE.TTF", 32, {255, 255, 255});
+          new Texture("playing", "Font/ARCADE.TTF", 16, {255, 255, 255});
       break;
   }
 
@@ -281,29 +282,29 @@ RoomInfo::RoomInfo(std::string code, int playerCount, Status status)
                               Graphics::Instance()->CELL_SIZE, 2, 0.2f,
                               AnimatedTexture::horizontal);
   mBase->Parent(this);
-  mBase->Pos(Vector2(50.0f, 0.0f));
-  mBase->Scale(Vector2(0.7f, 0.7f));
+  mBase->Pos(Vector2(25.0f, 0.0f));
+  mBase->Scale(Vector2(0.35f, 0.35f));
 
   mWeapon = new AnimatedTexture("Tank/Red/Weapons/turret_01_mk1.png", 0, 0,
                                 Graphics::Instance()->CELL_SIZE,
                                 Graphics::Instance()->CELL_SIZE, 8, 0.7f,
                                 AnimatedTexture::horizontal);
   mWeapon->Parent(this);
-  mWeapon->Pos(Vector2(50.0f, 0.0f));
-  mWeapon->Scale(Vector2(0.7f, 0.7f));
+  mWeapon->Pos(Vector2(25.0f, 0.0f));
+  mWeapon->Scale(Vector2(0.35f, 0.35f));
 
   mCode->Parent(this);
-  mCode->Pos(Vector2(-250.0f, 0.0f));
+  mCode->Pos(Vector2(-125.0f, 0.0f));
 
   mPlayerCount->Parent(this);
-  mPlayerCount->Pos(Vector2(-50.0f, 0.0f));
+  mPlayerCount->Pos(Vector2(-25.0f, 0.0f));
 
   mStatusText->Parent(this);
-  mStatusText->Scale(Vector2(0.25f, 0.25f));
-  mStatusText->Pos(Vector2(100.0f, 0.0f));
+  mStatusText->Scale(Vector2(0.125f, 0.125f));
+  mStatusText->Pos(Vector2(50.0f, 0.0f));
 
   mStatusTexture->Parent(this);
-  mStatusTexture->Pos(Vector2(250.0f, 0.0f));
+  mStatusTexture->Pos(Vector2(125.0f, 0.0f));
 }
 
 RoomInfo::~RoomInfo() {
