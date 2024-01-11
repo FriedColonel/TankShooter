@@ -38,6 +38,10 @@ std::string TSS::RoomHandler::join_room(std::string username,
     return "";
   }
 
+  if (room->status != 1) {
+    return "";
+  }
+
   Player *player = new Player();
   player->username = username;
   player->tank = room->players.size() + 1;
@@ -63,15 +67,8 @@ std::string TSS::RoomHandler::leave_room(std::string username,
     return "";
   }
 
-  for (int i = 0; i < room->players.size(); i++) {
-    if (room->players[i].username == username) {
-      room->players.erase(room->players.begin() + i);
-      break;
-    }
-  }
-
-  // remove room if no player in room
-  if (room->players.size() == 0) {
+  // remove room if no player left in room
+  if (room->players.size() <= 1) {
     for (int i = 0; i < rooms->length; i++) {
       Room *r = static_cast<Room *>(rooms->retrieve(i));
       if (r->room_id == room_id) {
@@ -81,6 +78,20 @@ std::string TSS::RoomHandler::leave_room(std::string username,
     }
 
     return "room_empty";
+  }
+
+  // remove player from room
+  for (int i = 0; i < room->players.size(); i++) {
+    if (room->players[i].username == username) {
+      // if leader leave room, assign new leader
+      if (room->players[i].is_leader) {
+        room->players[i + 1].is_leader = true;
+      }
+
+      room->players.erase(room->players.begin() + i);
+
+      break;
+    }
   }
 
   return json_to_string(*room_to_json(room));
@@ -99,7 +110,7 @@ std::string TSS::RoomHandler::get_rooms_list() {
 
   for (int i = 0; i < rooms->length; i++) {
     Room *room = static_cast<Room *>(rooms->retrieve(i));
-    room_list_json.push_back(*room_to_json(room));
+    if (room->status == 1) room_list_json.push_back(*room_to_json(room));
   }
 
   return json_to_string(room_list_json);

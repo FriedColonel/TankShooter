@@ -203,6 +203,9 @@ void TSS::Server::handle_room(int client_socket) {
 
     auth_handler->update_online_user(std::string(username), true);
 
+    // Broadcast to all clients that room has new player joined
+    broadcast("room:get_rooms:success\n" + room_handler->get_rooms_list());
+
     broadcast_to_room(client_socket, result, std::string(room_id));
   }
 
@@ -238,6 +241,9 @@ void TSS::Server::handle_room(int client_socket) {
 
     std::string response_msg = make_response("room:leave_room", result);
 
+    // Broadcast to all clients that room has a player leave
+    broadcast("room:get_rooms:success\n" + room_handler->get_rooms_list());
+
     broadcast_to_room(client_socket, response_msg, std::string(room_id), false);
   }
 }
@@ -270,6 +276,9 @@ void TSS::Server::handle_game(int client_socket) {
 
     std::string result =
         make_response("game:start", game_handler->start_game(room_id));
+
+    // Broadcast to all clients that room has started
+    broadcast("room:get_rooms:success\n" + room_handler->get_rooms_list());
 
     broadcast_to_room(client_socket, result, std::string(room_id));
   }
