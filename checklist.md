@@ -1,7 +1,7 @@
 # Check list
 
-- [ ] Xử lý truyền dòng: 1 điểm
-- [ ] Cài đặt cơ chế vào/ra socket trên server: 2 điểm
+- [x] Xử lý truyền dòng: 1 điểm
+- [x] Cài đặt cơ chế vào/ra socket trên server: 2 điểm
 - [ ] Đăng ký và quản lý tài khoản: 2 điểm
 - [ ] Đăng nhập và quản lý phiên: 2 điểm
 - [ ] Tạo phòng chơi: 1 điểm

@@ -94,6 +94,11 @@ std::string TSS::RoomHandler::leave_room(std::string username,
     }
   }
 
+  // reassign tank color
+  for (int i = 0; i < room->players.size(); i++) {
+    room->players[i].tank = i + 1;
+  }
+
   return json_to_string(*room_to_json(room));
 }
 
