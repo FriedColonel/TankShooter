@@ -195,7 +195,10 @@ void TSS::Client::resume_game() {
 }
 
 void TSS::Client::player_dead() {
-  if (is_training) return;
+  if (is_training) {
+    alive_players--;
+    return;
+  };
 
   std::string send_message =
       "game:player_dead:" + currentRoom->room_id + ":" + username;

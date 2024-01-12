@@ -69,6 +69,7 @@ void ScreenManager::Update() {
           mCurrentScreen = join;
         } else if (mStartScreen->SelectedMode() == training) {
           mClient->is_training = true;
+          mClient->alive_players = 4;
           mPlayScreen->StartNewGame(true);
           mCurrentScreen = play;
         } else if (mStartScreen->SelectedMode() == leaderBoard) {

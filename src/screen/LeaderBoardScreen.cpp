@@ -83,7 +83,7 @@ void LeaderBoardScreen::UpdateRankings() {
       mRankings[count] =
           new LeaderBoardPlayer(player->username, player->points, i);
       mRankings[count]->Parent(mRankingsContainer);
-      mRankings[count]->Pos(Vector2(0.0f, count * 100.0f));
+      mRankings[count]->Pos(Vector2(0.0f, count * 50.0f));
 
       count++;
     }

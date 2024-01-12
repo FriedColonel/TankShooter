@@ -144,6 +144,7 @@ void Base::Dead() {
   mAnimating = true;
   Active(false);
   mTank->Dead();
+  if (mIsBot) mClient->player_dead();
   if (mIsThisPlayer) mClient->player_dead();
 
   for (int i = 0; i < 3; i++) {
