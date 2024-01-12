@@ -39,7 +39,8 @@ class LeaderBoardScreen : public GameEntity {
 
 class LeaderBoardPlayer : public PlayerRanking {
  public:
-  LeaderBoardPlayer(std::string name, int score, int rank);
+  LeaderBoardPlayer(std::string name, int score, int rank,
+                    bool isThisPlayer = false);
 };
 
 #endif

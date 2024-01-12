@@ -34,7 +34,11 @@ class PlayerInfo : public GameEntity {
     Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.5f,
                 250.0f + index * 40.0f));
 
-    mPlayerName = new Texture(name, "Font/ARCADE.TTF", 20, {230, 230, 230});
+    if (isThisPlayer) {
+      mPlayerName = new Texture(name, "Font/ARCADE.TTF", 20, {150, 0, 0});
+    } else {
+      mPlayerName = new Texture(name, "Font/ARCADE.TTF", 20, {230, 230, 230});
+    }
     mPlayerName->Parent(this);
     mPlayerName->Pos(Vector2(-75.0f, 0.0f));
 

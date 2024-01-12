@@ -69,7 +69,8 @@ void ResultScreen::UpdatePlayerRanking() {
 }
 
 // ============PlayerRanking================
-PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
+PlayerRanking::PlayerRanking(std::string name, int score, COLOR color,
+                             bool isThisPlayer)
     : GameEntity() {
   mTank = new GameEntity(Vector2(-250.0f, 0.0f));
   mTank->Parent(this);
@@ -91,7 +92,12 @@ PlayerRanking::PlayerRanking(std::string name, int score, COLOR color)
   mWeapon->Pos(VEC2_ZERO);
   mWeapon->Scale(Vector2(0.35f, 0.35f));
 
-  mNameText = new Texture(name, "Font/ARCADE.TTF", 16, {255, 255, 255});
+  if (isThisPlayer) {
+    mNameText = new Texture(name, "Font/ARCADE.TTF", 16, {150, 0, 0});
+  } else {
+    mNameText = new Texture(name, "Font/ARCADE.TTF", 16, {255, 255, 255});
+  }
+
   mNameText->Parent(this);
   mNameText->Pos(Vector2(-25.0f, 0.0f));
 

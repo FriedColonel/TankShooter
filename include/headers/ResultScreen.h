@@ -15,7 +15,8 @@ class PlayerRanking : public GameEntity {
   AnimatedTexture *mBase, *mWeapon;
 
  public:
-  PlayerRanking(std::string name, int score, COLOR color);
+  PlayerRanking(std::string name, int score, COLOR color,
+                bool isThisPlayer = false);
   ~PlayerRanking();
 
   void Update();

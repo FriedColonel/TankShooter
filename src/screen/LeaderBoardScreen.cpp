@@ -81,7 +81,8 @@ void LeaderBoardScreen::UpdateRankings() {
         continue;
 
       mRankings[count] =
-          new LeaderBoardPlayer(player->username, player->points, i);
+          new LeaderBoardPlayer(player->username, player->points, i,
+                                player->username == mClient->get_username());
       mRankings[count]->Parent(mRankingsContainer);
       mRankings[count]->Pos(Vector2(0.0f, count * 50.0f));
 
@@ -112,8 +113,9 @@ void LeaderBoardScreen::Render() {
 }
 
 // =============LEADERBOARDPLAYER================
-LeaderBoardPlayer::LeaderBoardPlayer(std::string name, int score, int rank)
-    : PlayerRanking(name, score, COLOR::red) {
+LeaderBoardPlayer::LeaderBoardPlayer(std::string name, int score, int rank,
+                                     bool isThisPlayer)
+    : PlayerRanking(name, score, COLOR::red, isThisPlayer) {
   std::string rank_str = rank == 0   ? "1ST"
                          : rank == 1 ? "2ND"
                          : rank == 2 ? "3RD"
