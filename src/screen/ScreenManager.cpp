@@ -146,6 +146,12 @@ void ScreenManager::Update() {
             mClient->leave_room();
           }
         }
+      } else if (mInput->KeyPressed(SDL_SCANCODE_Q)) {
+        if (mClient->is_training && mClient->is_game_paused) {
+          mCurrentScreen = start;
+          mClient->leave_room();
+          mClient->is_game_paused = false;
+        }
       }
       break;
 
